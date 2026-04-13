@@ -144,7 +144,7 @@ class OEMM_Participant {
             'attribution_session_pages' => $attribution['session_pages'],
 
             // Plugin-Daten (Startnummer, Tokens, Scans)
-            'startnumber'             => $row['startnumber']       ?? null,
+            'startnumber'             => isset( $row['startnumber'] ) && $row['startnumber'] !== null ? (string) $row['startnumber'] : null,
             'token_app'               => $row['token_app']         ?? null,
             'token_paper'             => $row['token_paper']       ?? null,
             'scan_count_app'          => (int) ( $row['scan_count_app']   ?? 0 ),
