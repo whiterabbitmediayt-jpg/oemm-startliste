@@ -5,6 +5,13 @@ Format: [Semantisches Versioning](https://semver.org/) — MAJOR.MINOR.PATCH
 
 ---
 
+## [1.2.1] — 2026-04-13
+
+### Fix
+- Auto-Updater Test: GitHub → WordPress Update-Mechanismus verifiziert
+
+---
+
 ## [1.2.0] — 2026-04-13
 
 ### Neu
