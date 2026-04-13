@@ -44,9 +44,7 @@ $active_keys  = array_keys( array_filter( $fields ) );
                     ?>
                     <th><?php echo esc_html( $label ); ?></th>
                     <?php endforeach; ?>
-                    <th style="width:60px">QR App</th>
-                    <th style="width:60px">QR Zettel</th>
-                    <th style="width:50px">✓</th>
+                    <th style="width:100px">Speichern</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +52,6 @@ $active_keys  = array_keys( array_filter( $fields ) );
                     <tr><td colspan="30">Keine Teilnehmer gefunden. Bitte Produkt-IDs in den Einstellungen prüfen.</td></tr>
                 <?php endif; ?>
                 <?php foreach ( $participants as $p ) :
-                    $tokens      = OEMM_Token::get_or_create( (int) $p['customer_id'] );
                     $search_text = strtolower( implode( ' ', array(
                         $p['billing_first_name'] ?? '',
                         $p['billing_last_name']  ?? '',
@@ -97,28 +94,11 @@ $active_keys  = array_keys( array_filter( $fields ) );
                     ?></td>
                     <?php endforeach; ?>
 
-                    <!-- QR App -->
-                    <td>
-                        <?php if ( $tokens['app'] ) : ?>
-                        <button class="oemm-btn-show-qr button button-small"
-                                data-token="<?php echo esc_attr( $tokens['app'] ); ?>"
-                                data-label="App">QR</button>
-                        <?php else : ?><em>—</em><?php endif; ?>
-                    </td>
-
-                    <!-- QR Zettel -->
-                    <td>
-                        <?php if ( $tokens['paper'] ) : ?>
-                        <button class="oemm-btn-show-qr button button-small"
-                                data-token="<?php echo esc_attr( $tokens['paper'] ); ?>"
-                                data-label="Zettel">QR</button>
-                        <?php else : ?><em>—</em><?php endif; ?>
-                    </td>
-
-                    <!-- Speichern -->
+                    <!-- Startnummer speichern -->
                     <td>
                         <button class="oemm-btn-save-startnumber button button-small button-primary"
-                                data-customer-id="<?php echo esc_attr( $p['customer_id'] ); ?>">✓</button>
+                                data-customer-id="<?php echo esc_attr( $p['customer_id'] ); ?>"
+                                title="Startnummer speichern">✓ Speichern</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>

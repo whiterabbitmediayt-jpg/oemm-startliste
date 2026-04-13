@@ -100,9 +100,9 @@ class OEMM_Settings {
         // Standard: die wichtigsten Felder vorausgewählt
         $defaults = array(
             'startnumber', 'billing_first_name', 'billing_last_name',
-            'geschlecht', 'geburtsdatum', 'customer_email', 'billing_phone',
+            'geschlecht', 'customer_email', 'billing_phone',
             'billing_address_1', 'billing_postcode', 'billing_city', 'billing_country',
-            'order_id', 'order_status', 'shirt_size', 'product_name',
+            'shirt_size', 'product_name',
         );
         return array_fill_keys( $defaults, 1 );
     }
