@@ -17,7 +17,7 @@ $active     = OEMM_Settings::get_fields();
                 🏁 Startliste (Basis)
             </button>
             <button class="button oemm-profile-btn" data-profile="druckerei"
-                    data-fields="startnumber,billing_first_name,billing_last_name,billing_address_1,billing_postcode,billing_city,billing_country,token_paper">
+                    data-fields="startnumber,token_paper,billing_first_name,billing_last_name,geschlecht,billing_company,billing_address_1,billing_postcode,billing_city,billing_country">
                 🖨️ Druckerei / Serienbrief
             </button>
             <button class="button oemm-profile-btn" data-profile="besenwagen"
