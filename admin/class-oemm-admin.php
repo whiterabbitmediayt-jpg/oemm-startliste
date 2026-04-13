@@ -17,7 +17,8 @@ class OEMM_Admin {
         add_action( 'wp_ajax_oemm_import_excel',      array( __CLASS__, 'ajax_import_excel' ) );
         add_action( 'wp_ajax_oemm_save_settings',     array( __CLASS__, 'ajax_save_settings' ) );
         add_action( 'wp_ajax_oemm_export_csv',         array( __CLASS__, 'ajax_export_csv' ) );
-        add_action( 'wp_ajax_oemm_export_qr_zip',      array( __CLASS__, 'ajax_export_qr_zip' ) );
+        add_action( 'wp_ajax_oemm_export_qr_zip',        array( __CLASS__, 'ajax_export_qr_zip' ) );
+        add_action( 'wp_ajax_oemm_clear_update_cache',   array( __CLASS__, 'ajax_clear_update_cache' ) );
     }
 
     // -------------------------------------------------------------------------
@@ -319,6 +320,17 @@ class OEMM_Admin {
 
         fclose( $out );
         exit;
+    }
+
+    public static function ajax_clear_update_cache() {
+        check_ajax_referer( 'oemm_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized', 403 );
+
+        delete_transient( 'oemm_github_release' );
+        delete_site_transient( 'update_plugins' );
+        wp_update_plugins();
+
+        wp_send_json_success( 'Update-Cache geleert.' );
     }
 
     public static function ajax_save_settings() {

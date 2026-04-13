@@ -19,6 +19,9 @@ $active_keys  = array_keys( array_filter( $fields ) );
             <a href="<?php echo esc_url( admin_url( 'admin.php?page=oemm-export' ) ); ?>" class="button button-secondary">
                 📥 Export
             </a>
+            <button id="oemm-btn-clear-update-cache" class="button button-secondary" title="Update-Prüfung erzwingen">
+                🔄 Updates prüfen
+            </button>
         </div>
     </div>
 

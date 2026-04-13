@@ -137,6 +137,25 @@ jQuery(function($) {
     });
 
     // -------------------------------------------------------------------------
+    // Update-Cache leeren
+    // -------------------------------------------------------------------------
+
+    $('#oemm-btn-clear-update-cache').on('click', function() {
+        var $btn = $(this).prop('disabled', true).text('Wird geprüft...');
+        $.post(oemm_ajax.url, {
+            action: 'oemm_clear_update_cache',
+            nonce: oemm_ajax.nonce
+        }).then(function(res) {
+            if (res.success) {
+                showNotice('✅ Update-Cache geleert. Seite wird neu geladen...', 'success');
+                setTimeout(function() { location.href = '<?php echo admin_url("plugins.php"); ?>'; }, 1500);
+            }
+        }).always(function() {
+            $btn.prop('disabled', false).text('🔄 Updates prüfen');
+        });
+    });
+
+    // -------------------------------------------------------------------------
     // Suche in Startliste
     // -------------------------------------------------------------------------
 

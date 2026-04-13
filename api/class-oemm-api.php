@@ -53,6 +53,13 @@ class OEMM_API {
             'permission_callback' => array( __CLASS__, 'check_api_key' ),
         ) );
 
+        // Admin: Update-Cache leeren (nur für Admins)
+        register_rest_route( $ns, '/clear-update-cache', array(
+            'methods'             => 'POST',
+            'callback'            => array( __CLASS__, 'clear_update_cache' ),
+            'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        ) );
+
         // Foto-Zuordnung - fuer Christian & Marcel (Fotopoint)
         register_rest_route( $ns, '/photo', array(
             'methods'             => 'POST',
@@ -175,6 +182,13 @@ class OEMM_API {
      *
      * Body: { "token": "XYZ", "photo_url": "https://..." }
      */
+    public static function clear_update_cache( WP_REST_Request $request ): WP_REST_Response {
+        delete_transient( 'oemm_github_release' );
+        delete_site_transient( 'update_plugins' );
+        wp_update_plugins();
+        return new WP_REST_Response( array( 'success' => true, 'message' => 'Update-Cache geleert.' ), 200 );
+    }
+
     public static function post_photo( WP_REST_Request $request ): WP_REST_Response {
         $token     = sanitize_text_field( $request->get_param( 'token' ) ?? '' );
         $photo_url = esc_url_raw( $request->get_param( 'photo_url' ) ?? '' );
