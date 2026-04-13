@@ -220,6 +220,19 @@ class OEMM_API {
                 // Startnummer als String übergeben (z.B. '01', '007a')
                 OEMM_Participant::set_startnumber( $cid, (string) $row['startnumber'] );
             }
+
+            // billing_title in Order-Meta schreiben (1=Herr, 2=Frau)
+            if ( isset( $row['billing_title'] ) && $row['billing_title'] !== '' ) {
+                $p = OEMM_Participant::get( $cid );
+                if ( ! empty( $p['order_id'] ) ) {
+                    $order = wc_get_order( $p['order_id'] );
+                    if ( $order ) {
+                        $order->update_meta_data( '_billing_title', sanitize_text_field( $row['billing_title'] ) );
+                        $order->save();
+                    }
+                }
+            }
+
             $count++;
         }
 
