@@ -304,14 +304,29 @@ class OEMM_Participant {
         $year  = OEMM_Settings::get_event_year();
         $start = OEMM_Settings::get_startnumber_start();
 
-        // Alle bereits vergebenen Nummern dieses Jahres
-        $taken = $wpdb->get_col( $wpdb->prepare(
-            "SELECT startnumber FROM {$table} WHERE event_year = %d AND startnumber IS NOT NULL ORDER BY startnumber ASC",
+        // Alle bereits vergebenen Nummern als Integer-Set
+        // '01', '02', '007a' etc. werden auf ihren numerischen Wert reduziert
+        // damit z.B. '01' und '1' beide als "1 ist belegt" erkannt werden
+        $raw_taken = $wpdb->get_col( $wpdb->prepare(
+            "SELECT startnumber FROM {$table} WHERE event_year = %d AND startnumber IS NOT NULL",
             $year
         ) );
-        $taken = array_map( 'intval', $taken );
 
-        // Alle Teilnehmer ohne Startnummer
+        // Belegte Integer-Werte extrahieren (nur rein numerische Einträge)
+        $taken_ints = array();
+        foreach ( $raw_taken as $sn ) {
+            $sn_str = (string) $sn;
+            if ( ctype_digit( $sn_str ) ) {
+                $taken_ints[] = (int) $sn_str;
+            } elseif ( preg_match( '/^0*(\d+)/', $sn_str, $m ) ) {
+                // z.B. '007a' → ignorieren (hat Buchstaben, kein fortlaufendes Muster)
+                // z.B. '007' → 7 ist belegt
+                // Nur reine Zahlen zählen
+            }
+        }
+        $taken_ints = array_unique( $taken_ints );
+
+        // Alle Teilnehmer ohne Startnummer (nach Registrierungsreihenfolge)
         $without = $wpdb->get_col( $wpdb->prepare(
             "SELECT customer_id FROM {$table} WHERE event_year = %d AND startnumber IS NULL ORDER BY id ASC",
             $year
@@ -321,22 +336,23 @@ class OEMM_Participant {
             return 0;
         }
 
-        $next    = $start;
+        $next    = (int) $start;
         $counter = 0;
 
         foreach ( $without as $customer_id ) {
-            // Nächste freie Nummer finden
-            while ( in_array( $next, $taken, true ) ) {
+            // Nächste freie Integer-Nummer finden
+            while ( in_array( $next, $taken_ints, true ) ) {
                 $next++;
             }
+            // Als plain Integer-String speichern (keine führenden Nullen)
             $wpdb->update(
                 $table,
-                array( 'startnumber' => $next ),
+                array( 'startnumber' => (string) $next ),
                 array( 'customer_id' => $customer_id, 'event_year' => $year ),
-                array( '%d' ),
+                array( '%s' ),
                 array( '%d', '%d' )
             );
-            $taken[] = $next;
+            $taken_ints[] = $next;
             $next++;
             $counter++;
         }
