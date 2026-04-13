@@ -82,10 +82,9 @@
 
                     <!-- Startnummer -->
                     <td data-val="<?php echo esc_attr( $sn ); ?>">
-                        <input type="number"
+                        <input type="text"
                                class="oemm-startnumber-input"
                                value="<?php echo esc_attr( $sn ); ?>"
-                               min="1"
                                style="width:60px"
                                data-customer-id="<?php echo esc_attr( $cid ); ?>"
                         />
