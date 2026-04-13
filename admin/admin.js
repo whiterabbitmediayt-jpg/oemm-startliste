@@ -331,16 +331,27 @@ document.addEventListener('DOMContentLoaded', function() {
             rows.sort(function(a, b) {
                 var tds = [a, b].map(function(r) {
                     var td = r.querySelectorAll('td')[col];
-                    return td ? (td.dataset.val || td.textContent).trim() : '';
+                    if (!td) return '';
+                    // Bei Startnummer-Spalte: aktuellen Input-Wert lesen
+                    var input = td.querySelector('input');
+                    if (input) return input.value.trim();
+                    return (td.dataset.val || td.textContent).trim();
                 });
 
                 if (type === 'num') {
-                    var na = parseFloat(tds[0]) || 0;
-                    var nb = parseFloat(tds[1]) || 0;
-                    // Leere Startnummern immer ans Ende
-                    if (!tds[0] && tds[1]) return 1;
-                    if (tds[0] && !tds[1]) return -1;
-                    return asc ? na - nb : nb - na;
+                    // Leere Werte immer ans Ende
+                    if (tds[0] === '' && tds[1] !== '') return 1;
+                    if (tds[0] !== '' && tds[1] === '') return -1;
+                    if (tds[0] === '' && tds[1] === '') return 0;
+                    // Numerisch sortieren (parseInt entfernt führende Nullen für die Reihenfolge)
+                    // '01' und '1' landen nebeneinander, '01' < '1' via String-Vergleich
+                    var na = parseInt(tds[0], 10);
+                    var nb = parseInt(tds[1], 10);
+                    if (na !== nb) return asc ? na - nb : nb - na;
+                    // Bei gleicher Zahl: String-Vergleich (01 vor 1)
+                    return asc
+                        ? tds[0].localeCompare(tds[1], 'de', {numeric: false})
+                        : tds[1].localeCompare(tds[0], 'de', {numeric: false});
                 } else {
                     return asc
                         ? tds[0].localeCompare(tds[1], 'de')
