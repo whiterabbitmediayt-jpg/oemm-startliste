@@ -157,7 +157,7 @@ class OEMM_Admin {
         if ( ! current_user_can( 'manage_woocommerce' ) ) wp_die( 'Unauthorized', 403 );
 
         $customer_id = intval( $_POST['customer_id'] ?? 0 );
-        $number      = $_POST['startnumber'] === '' ? null : intval( $_POST['startnumber'] );
+        $number      = $_POST['startnumber'] === '' ? null : sanitize_text_field( $_POST['startnumber'] );
 
         if ( ! $customer_id ) {
             wp_send_json_error( 'Ungültige Customer ID' );
@@ -203,8 +203,8 @@ class OEMM_Admin {
         $count = 0;
         foreach ( $data as $row ) {
             $cid = intval( $row['customer_id'] ?? 0 );
-            $sn  = intval( $row['startnumber'] ?? 0 );
-            if ( $cid && $sn ) {
+            $sn  = trim( (string) ( $row['startnumber'] ?? '' ) );
+            if ( $cid && $sn !== '' ) {
                 OEMM_Participant::ensure_row( $cid );
                 OEMM_Participant::set_startnumber( $cid, $sn );
                 OEMM_Token::get_or_create( $cid );
