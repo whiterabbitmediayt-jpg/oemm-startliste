@@ -16,6 +16,12 @@ class OEMM_Updater {
             'oemm-startliste'
         );
 
+        // Token aus Einstellungen verwenden (verhindert Rate Limit bei GitHub)
+        $token = get_option( 'oemm_github_token', '' );
+        if ( $token ) {
+            $checker->setAuthentication( $token );
+        }
+
         $checker->getVcsApi()->enableReleaseAssets();
         $checker->setBranch( 'main' );
     }
