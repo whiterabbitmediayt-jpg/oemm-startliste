@@ -130,6 +130,15 @@ class OEMM_Settings {
         if ( isset( $data['app_url'] ) ) {
             update_option( 'oemm_app_url', esc_url_raw( $data['app_url'] ) );
         }
+        if ( isset( $data['github_token'] ) && ! empty( $data['github_token'] ) ) {
+            // Token nur speichern wenn er sich geändert hat (nicht bei leerem Submit)
+            $token = sanitize_text_field( $data['github_token'] );
+            if ( str_starts_with( $token, 'ghp_' ) ) {
+                update_option( 'oemm_github_token', $token );
+                // Update-Cache leeren damit sofort geprüft wird
+                delete_transient( 'oemm_github_release' );
+            }
+        }
         if ( isset( $data['api_key'] ) ) {
             $key = preg_replace( '/[^a-zA-Z0-9\-_]/', '', $data['api_key'] );
             update_option( 'oemm_api_key', $key );

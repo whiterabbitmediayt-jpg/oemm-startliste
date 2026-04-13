@@ -5,6 +5,15 @@ Format: [Semantisches Versioning](https://semver.org/) — MAJOR.MINOR.PATCH
 
 ---
 
+## [1.2.0] — 2026-04-13
+
+### Neu
+- **GitHub Auto-Updater:** Plugin aktualisiert sich direkt aus dem WP-Admin (Plugins → "Aktualisieren")
+- GitHub Token in Einstellungen hinterlegen → ab dann 1-Klick-Updates
+- Repo: whiterabbitmediayt-jpg/oemm-startliste (privat)
+
+---
+
 ## [1.1.1] — 2026-04-13
 
 ### Geändert

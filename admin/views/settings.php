@@ -50,6 +50,14 @@ $active     = OEMM_Settings::get_fields();
                 </td>
             </tr>
             <tr>
+                <th>GitHub Token (Auto-Update)</th>
+                <td>
+                    <input type="password" name="github_token" value="<?php echo esc_attr( get_option('oemm_github_token','') ); ?>" style="width:400px;font-family:monospace" autocomplete="off" />
+                    <p class="description">Personal Access Token für das private GitHub Repo. Wird für automatische Updates benötigt.<br>
+                    Repo: <a href="https://github.com/whiterabbitmediayt-jpg/oemm-startliste" target="_blank">whiterabbitmediayt-jpg/oemm-startliste</a></p>
+                </td>
+            </tr>
+            <tr>
                 <th>API-Key (für Urban's App)</th>
                 <td>
                     <input type="text" name="api_key" value="<?php echo esc_attr( get_option('oemm_api_key','') ); ?>" style="width:400px;font-family:monospace" />

@@ -3,7 +3,7 @@
  * Plugin Name:       OEMM Startliste
  * Plugin URI:        https://mopedmarathon.at
  * Description:       Verwaltung der Startliste fuer den Oetztaler Moped Marathon. Startnummern, QR-Codes, App-Anbindung.
- * Version:           1.1.1
+ * Version:           1.2.0
  * Author:            Manuel Ribis GmbH
  * Author URI:        https://mopedmarathon.at
  * License:           GPL-2.0+
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Plugin-Konstanten
-define( 'OEMM_VERSION',     '1.1.1' );
+define( 'OEMM_VERSION',     '1.2.0' );
 define( 'OEMM_PLUGIN_FILE', __FILE__ );
 define( 'OEMM_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'OEMM_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,7 @@ require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-participant.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-token.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-qr.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-hooks.php';
+require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-updater.php';
 require_once OEMM_PLUGIN_DIR . 'admin/class-oemm-admin.php';
 require_once OEMM_PLUGIN_DIR . 'frontend/class-oemm-frontend.php';
 require_once OEMM_PLUGIN_DIR . 'api/class-oemm-api.php';
@@ -49,6 +50,7 @@ function oemm_init() {
     }
 
     OEMM_Settings::init();
+    OEMM_Updater::init();
     OEMM_Hooks::init();
     OEMM_Admin::init();
     OEMM_Frontend::init();
