@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 class OEMM_Token {
 
     /**
-     * Generiert einen stabilen Token fuer einen Kunden
+     * Generiert einen stabilen Token für einen Kunden
      * Token aendert sich NIE nach Generierung - Daten dahinter werden aktuell gehalten
      *
      * @param int    $customer_id  WooCommerce Customer ID
@@ -19,13 +19,13 @@ class OEMM_Token {
     public static function generate( int $customer_id, string $channel, int $year ): string {
         $salt = OEMM_Settings::get_token_salt();
         $raw  = hash( 'sha256', $customer_id . '|' . $channel . '|' . $year . '|' . $salt );
-        // Ersten 16 Bytes (32 Hex-Zeichen) nehmen -> kurz genug fuer QR, lang genug fuer Sicherheit
+        // Ersten 16 Bytes (32 Hex-Zeichen) nehmen -> kurz genug für QR, lang genug für Sicherheit
         return substr( $raw, 0, 32 );
     }
 
     /**
-     * Erstellt (falls nicht vorhanden) und gibt beide Tokens fuer einen Kunden zurueck
-     * Gibt array['app'] und array['paper'] zurueck
+     * Erstellt (falls nicht vorhanden) und gibt beide Tokens für einen Kunden zurück
+     * Gibt array['app'] und array['paper'] zurück
      */
     public static function get_or_create( int $customer_id ): array {
         global $wpdb;
@@ -61,7 +61,7 @@ class OEMM_Token {
     }
 
     /**
-     * Token aufloesen -> gibt customer_id zurueck oder NULL wenn ungueltig
+     * Token aufloesen -> gibt customer_id zurück oder NULL wenn ungueltig
      */
     public static function resolve( string $token ): ?int {
         global $wpdb;

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class OEMM_QR {
 
     /**
-     * Gibt die URL zu einem QR-Code-Bild zurueck
+     * Gibt die URL zu einem QR-Code-Bild zurück
      * Ziel-URL: {app_url}{token}
      *
      * @param string $token
@@ -29,7 +29,7 @@ class OEMM_QR {
     }
 
     /**
-     * Gibt ein <img>-Tag fuer den QR-Code zurueck
+     * Gibt ein <img>-Tag für den QR-Code zurück
      */
     public static function get_img( string $token, string $label = '', int $size = 200 ): string {
         $url = self::get_url( $token, $size );
@@ -38,7 +38,7 @@ class OEMM_QR {
     }
 
     /**
-     * Gibt die vollstaendige Ziel-URL zurueck (nicht den QR-Code-Bild-URL)
+     * Gibt die vollstaendige Ziel-URL zurück (nicht den QR-Code-Bild-URL)
      */
     public static function get_target_url( string $token ): string {
         return OEMM_Settings::get_app_url() . $token;

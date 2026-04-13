@@ -3,8 +3,8 @@
     <h1>ÖMM Import — Einmalig (2026)</h1>
 
     <div class="notice notice-warning">
-        <p><strong>⚠ Achtung:</strong> Dieser Import setzt bestehende Startnummern in der Datenbank — einmalig fuer den Uebergang von der Excel-Tabelle zum Plugin.<br>
-        Danach wird alles ueber das Plugin verwaltet. Nur fuer Admins zugaenglich.</p>
+        <p><strong>⚠ Achtung:</strong> Dieser Import setzt bestehende Startnummern in der Datenbank — einmalig für den Übergang von der Excel-Tabelle zum Plugin.<br>
+        Danach wird alles über das Plugin verwaltet. Nur für Admins zugänglich.</p>
     </div>
 
     <div id="oemm-notice" class="notice" style="display:none;"></div>

@@ -160,7 +160,7 @@ class OEMM_Admin {
         $number      = $_POST['startnumber'] === '' ? null : intval( $_POST['startnumber'] );
 
         if ( ! $customer_id ) {
-            wp_send_json_error( 'Ungueltige Customer ID' );
+            wp_send_json_error( 'Ungültige Customer ID' );
         }
 
         $ok = OEMM_Participant::set_startnumber( $customer_id, $number );
@@ -197,7 +197,7 @@ class OEMM_Admin {
         $data = json_decode( $raw, true );
 
         if ( ! is_array( $data ) ) {
-            wp_send_json_error( 'Ungueltige Daten' );
+            wp_send_json_error( 'Ungültige Daten' );
         }
 
         $count = 0;

@@ -27,7 +27,7 @@ class OEMM_Frontend {
      * Nur wenn:
      *   1. App-Button global AN (Einstellungs-Schalter)
      *   2. Kunde eingeloggt
-     *   3. Kunde hat eine gueltige Startnummer fuer dieses Jahr
+     *   3. Kunde hat eine gültige Startnummer für dieses Jahr
      */
     public static function render_dashboard_button() {
         if ( ! is_user_logged_in() ) return;

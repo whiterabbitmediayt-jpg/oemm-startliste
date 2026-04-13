@@ -29,7 +29,7 @@ class OEMM_Participant {
     }
 
     /**
-     * Gibt den vollstaendigen Teilnehmer-Datensatz zurueck
+     * Gibt den vollstaendigen Teilnehmer-Datensatz zurück
      * Kombiniert WooCommerce-Kundendaten + Bestelldaten + Plugin-Daten
      *
      * @return array|null
@@ -154,8 +154,8 @@ class OEMM_Participant {
     }
 
     /**
-     * Gibt alle Teilnehmer dieses Jahres zurueck die ein gueltiges Produkt gekauft haben
-     * Verwendet fuer die Admin-Startliste
+     * Gibt alle Teilnehmer dieses Jahres zurück die ein gültiges Produkt gekauft haben
+     * Verwendet für die Admin-Startliste
      */
     public static function get_all( array $args = array() ): array {
         global $wpdb;
@@ -169,7 +169,7 @@ class OEMM_Participant {
 
         $placeholders = implode( ',', array_fill( 0, count( $products ), '%d' ) );
 
-        // Alle customer_ids die ein gueltiges Produkt haben
+        // Alle customer_ids die ein gültiges Produkt haben
         $order_items_table  = $wpdb->prefix . 'woocommerce_order_items';
         $order_itemmeta     = $wpdb->prefix . 'woocommerce_order_itemmeta';
         $posts_table        = $wpdb->prefix . 'posts';
@@ -189,7 +189,7 @@ class OEMM_Participant {
         );
 
         // HPOS-kompatibel: neuere WC-Versionen nutzen eigene Orders-Tabelle
-        // Fallback ueber wc_get_orders wenn der Join leer liefert
+        // Fallback über wc_get_orders wenn der Join leer liefert
         $customer_ids = $wpdb->get_col( $query );
 
         if ( empty( $customer_ids ) ) {
@@ -288,7 +288,7 @@ class OEMM_Participant {
     }
 
     /**
-     * Naechste freie Startnummer automatisch auffuellen
+     * Nächste freie Startnummer automatisch auffüllen
      * Vergibt fortlaufend ab oemm_startnumber_start, ueberspringt bereits vergebene
      */
     public static function fill_startnumbers(): int {
@@ -318,7 +318,7 @@ class OEMM_Participant {
         $counter = 0;
 
         foreach ( $without as $customer_id ) {
-            // Naechste freie Nummer finden
+            // Nächste freie Nummer finden
             while ( in_array( $next, $taken, true ) ) {
                 $next++;
             }
@@ -338,7 +338,7 @@ class OEMM_Participant {
     }
 
     /**
-     * Pruefen ob ein Kunde eine gueltige Startnummer fuer dieses Jahr hat
+     * Prüfen ob ein Kunde eine gültige Startnummer für dieses Jahr hat
      */
     public static function has_valid_startnumber( int $customer_id ): bool {
         global $wpdb;

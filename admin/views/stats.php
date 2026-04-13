@@ -39,7 +39,7 @@
                 <?php echo $pct_app; ?>% digital
             </div>
         </div>
-        <p style="color:#666">Ziel: Moeglichst viele Teilnehmer nutzen die App statt dem Papier-Brief.</p>
+        <p style="color:#666">Ziel: Möglichst viele Teilnehmer nutzen die App statt dem Papier-Brief.</p>
     </div>
 
     <!-- Detailansicht: wer hat welchen QR gescannt -->

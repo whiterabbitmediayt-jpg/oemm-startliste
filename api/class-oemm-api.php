@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * REST API v1 — fuer Urban's App
+ * REST API v1 — für Urban's App
  * Namespace: oemm/v1
  *
  * Endpoints:
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  *   POST /oemm/v1/checkpoint                        -> Zwischenzeit speichern (zukuenftig)
  *   POST /oemm/v1/photo                             -> Foto zuordnen (zukuenftig)
  *
- * Authentifizierung fuer sensible Endpoints:
+ * Authentifizierung für sensible Endpoints:
  *   - GET /participant: Token = Authentication (kein Login noetig, Token = Identitaet)
  *   - GET /status: offen
  *   - POST /checkpoint, /photo: API-Key im Header X-OEMM-Key
@@ -46,7 +46,7 @@ class OEMM_API {
             ),
         ) );
 
-        // Checkpoint-Zeiten (Geofencing) - fuer zukuenftige Erweiterung
+        // Checkpoint-Zeiten (Geofencing) - für zukuenftige Erweiterung
         register_rest_route( $ns, '/checkpoint', array(
             'methods'             => 'POST',
             'callback'            => array( __CLASS__, 'post_checkpoint' ),
@@ -60,7 +60,7 @@ class OEMM_API {
             'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         ) );
 
-        // Foto-Zuordnung - fuer Christian & Marcel (Fotopoint)
+        // Foto-Zuordnung - für Christian & Marcel (Fotopoint)
         register_rest_route( $ns, '/photo', array(
             'methods'             => 'POST',
             'callback'            => array( __CLASS__, 'post_photo' ),
@@ -85,7 +85,7 @@ class OEMM_API {
 
     /**
      * GET /oemm/v1/status
-     * Gibt Plugin-Version, Event-Jahr und Aktiv-Status zurueck
+     * Gibt Plugin-Version, Event-Jahr und Aktiv-Status zurück
      */
     public static function status( WP_REST_Request $request ): WP_REST_Response {
         return new WP_REST_Response( array(
@@ -99,7 +99,7 @@ class OEMM_API {
     /**
      * GET /oemm/v1/participant?token=XYZ
      *
-     * Gibt die Teilnehmerdaten fuer einen gueltigen Token zurueck.
+     * Gibt die Teilnehmerdaten für einen gültigen Token zurück.
      * Zaehlt Scan-Counter (App vs. Papier).
      *
      * Response (minimale Daten - nur was die App braucht):
@@ -153,7 +153,7 @@ class OEMM_API {
 
     /**
      * POST /oemm/v1/checkpoint
-     * Speichert eine Zwischenzeit fuer einen Teilnehmer
+     * Speichert eine Zwischenzeit für einen Teilnehmer
      *
      * Body: { "token": "XYZ", "checkpoint": "penserjoch", "timestamp": "2026-08-31T14:23:00Z" }
      */

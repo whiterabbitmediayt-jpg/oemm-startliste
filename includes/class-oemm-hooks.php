@@ -29,7 +29,7 @@ class OEMM_Hooks {
     }
 
     /**
-     * Prueft ob die Bestellung ein gueltiges Produkt enthaelt
+     * Prueft ob die Bestellung ein gültiges Produkt enthaelt
      * und legt (falls noetig) den Teilnehmer-Eintrag an + generiert Tokens
      */
     private static function process_order( int $order_id ): void {

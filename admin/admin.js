@@ -56,7 +56,7 @@ jQuery(function($) {
     });
 
     // -------------------------------------------------------------------------
-    // Alle Startnummern auffuellen
+    // Alle Startnummern auffüllen
     // -------------------------------------------------------------------------
 
     $('#oemm-btn-fill-startnumbers').on('click', function() {
@@ -64,7 +64,7 @@ jQuery(function($) {
 
         var $btn = $(this).prop('disabled', true).text('Wird befuellt...');
 
-        ajaxPost('fill_startnumbers', {}, 'Startnummern aufgefuellt!')
+        ajaxPost('fill_startnumbers', {}, 'Startnummern aufgefüllt!')
         .then(function(res) {
             if (res.success) {
                 setTimeout(function() { location.reload(); }, 1500);
@@ -113,7 +113,7 @@ jQuery(function($) {
             if (!data.fields[f]) data.fields[f] = 0;
         });
 
-        // Als JSON-Strings fuer POST senden
+        // Als JSON-Strings für POST senden
         var postData = { action: 'oemm_save_settings', nonce: oemm_ajax.nonce };
         postData.event_year       = data.event_year;
         postData.product_ids      = data.product_ids;
@@ -287,7 +287,7 @@ jQuery(function($) {
             var parsed = JSON.parse(data);
             if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('Kein Array');
         } catch(e) {
-            showNotice('Ungueltige JSON-Daten: ' + e.message, 'error');
+            showNotice('Ungültige JSON-Daten: ' + e.message, 'error');
             return;
         }
 
