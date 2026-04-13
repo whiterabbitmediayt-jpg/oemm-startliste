@@ -105,23 +105,23 @@ class OEMM_Participant {
             'customer_id'             => $customer_id,
             'event_year'              => $year,
 
-            // Persönliche Daten
-            'billing_first_name'      => $wc_customer->get_billing_first_name(),
-            'billing_last_name'       => $wc_customer->get_billing_last_name(),
+            // Persönliche Daten (mit Fallback auf Order wenn Customer-Profil leer)
+            'billing_first_name'      => $wc_customer->get_billing_first_name()  ?: ( $main_order ? $main_order->get_billing_first_name()  : '' ),
+            'billing_last_name'       => $wc_customer->get_billing_last_name()   ?: ( $main_order ? $main_order->get_billing_last_name()   : '' ),
             'geschlecht'              => $geschlecht,
             'geburtsdatum'            => $geburtsdatum,
-            'billing_company'         => $wc_customer->get_billing_company(),
+            'billing_company'         => $wc_customer->get_billing_company()     ?: ( $main_order ? $main_order->get_billing_company()     : '' ),
 
             // Kontakt
-            'customer_email'          => $wc_customer->get_email(),
-            'billing_phone'           => $wc_customer->get_billing_phone(),
+            'customer_email'          => $wc_customer->get_email()               ?: ( $main_order ? $main_order->get_billing_email()       : '' ),
+            'billing_phone'           => $wc_customer->get_billing_phone()       ?: ( $main_order ? $main_order->get_billing_phone()       : '' ),
 
-            // Adresse
-            'billing_address_1'       => $wc_customer->get_billing_address_1(),
-            'billing_address_2'       => $wc_customer->get_billing_address_2(),
-            'billing_postcode'        => $wc_customer->get_billing_postcode(),
-            'billing_city'            => $wc_customer->get_billing_city(),
-            'billing_country'         => $wc_customer->get_billing_country(),
+            // Adresse (mit Fallback auf Order wenn Customer-Profil leer)
+            'billing_address_1'       => $wc_customer->get_billing_address_1()  ?: ( $main_order ? $main_order->get_billing_address_1()  : '' ),
+            'billing_address_2'       => $wc_customer->get_billing_address_2()  ?: ( $main_order ? $main_order->get_billing_address_2()  : '' ),
+            'billing_postcode'        => $wc_customer->get_billing_postcode()    ?: ( $main_order ? $main_order->get_billing_postcode()    : '' ),
+            'billing_city'            => $wc_customer->get_billing_city()        ?: ( $main_order ? $main_order->get_billing_city()        : '' ),
+            'billing_country'         => $wc_customer->get_billing_country()     ?: ( $main_order ? $main_order->get_billing_country()     : '' ),
 
             // Bestellung
             'order_id'                => $main_order ? $main_order->get_id()                              : null,
