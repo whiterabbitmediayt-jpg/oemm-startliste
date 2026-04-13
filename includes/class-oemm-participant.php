@@ -169,14 +169,17 @@ class OEMM_Participant {
 
         $placeholders = implode( ',', array_fill( 0, count( $products ), '%d' ) );
 
-        // Alle customer_ids die ein gültiges Produkt haben
-        $order_items_table  = $wpdb->prefix . 'woocommerce_order_items';
-        $order_itemmeta     = $wpdb->prefix . 'woocommerce_order_itemmeta';
-        $posts_table        = $wpdb->prefix . 'posts';
+        // Korrekte Abfrage: _customer_user Meta enthält die echte WC Customer ID
+        // (nicht post_author, der zeigt auf den Admin der die Bestellung angelegt hat)
+        $order_items_table = $wpdb->prefix . 'woocommerce_order_items';
+        $order_itemmeta    = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $postmeta_table    = $wpdb->prefix . 'postmeta';
+        $posts_table       = $wpdb->prefix . 'posts';
 
         $query = $wpdb->prepare(
-            "SELECT DISTINCT p.post_author as customer_id
+            "SELECT DISTINCT pm.meta_value as customer_id
              FROM {$posts_table} p
+             INNER JOIN {$postmeta_table} pm ON pm.post_id = p.ID AND pm.meta_key = '_customer_user'
              INNER JOIN {$order_items_table} oi ON oi.order_id = p.ID
              INNER JOIN {$order_itemmeta} oim ON oim.order_item_id = oi.order_item_id
              WHERE p.post_type = 'shop_order'
@@ -184,35 +187,35 @@ class OEMM_Participant {
                AND oi.order_item_type = 'line_item'
                AND oim.meta_key = '_product_id'
                AND oim.meta_value IN ({$placeholders})
-               AND p.post_author > 0",
+               AND pm.meta_value > 0",
             ...$products
         );
 
-        // HPOS-kompatibel: neuere WC-Versionen nutzen eigene Orders-Tabelle
-        // Fallback über wc_get_orders wenn der Join leer liefert
         $customer_ids = $wpdb->get_col( $query );
 
+        // HPOS-Fallback (WooCommerce High-Performance Order Storage)
         if ( empty( $customer_ids ) ) {
-            // HPOS-Variante
-            $orders = wc_get_orders( array(
-                'limit'  => -1,
-                'status' => array( 'completed', 'processing' ),
-                'return' => 'ids',
-            ) );
-            foreach ( $orders as $order_id ) {
-                $order = wc_get_order( $order_id );
-                if ( ! $order ) continue;
-                foreach ( $order->get_items() as $item ) {
-                    if ( in_array( (int) $item->get_product_id(), $products, true ) ) {
-                        $cid = $order->get_customer_id();
-                        if ( $cid ) {
-                            $customer_ids[] = $cid;
-                        }
-                        break;
-                    }
-                }
+            $hpos_table = $wpdb->prefix . 'wc_orders';
+            $hpos_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$hpos_table}'" );
+
+            if ( $hpos_exists ) {
+                $hpos_items  = $wpdb->prefix . 'woocommerce_order_items';
+                $hpos_meta   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+                $query_hpos  = $wpdb->prepare(
+                    "SELECT DISTINCT o.customer_id
+                     FROM {$hpos_table} o
+                     INNER JOIN {$hpos_items} oi ON oi.order_id = o.id
+                     INNER JOIN {$hpos_meta} oim ON oim.order_item_id = oi.order_item_id
+                     WHERE o.type = 'shop_order'
+                       AND o.status IN ('wc-completed','wc-processing')
+                       AND oi.order_item_type = 'line_item'
+                       AND oim.meta_key = '_product_id'
+                       AND oim.meta_value IN ({$placeholders})
+                       AND o.customer_id > 0",
+                    ...$products
+                );
+                $customer_ids = $wpdb->get_col( $query_hpos );
             }
-            $customer_ids = array_unique( $customer_ids );
         }
 
         // Plugin-Zeilen sicherstellen + Daten sammeln
