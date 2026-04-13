@@ -149,7 +149,7 @@ class OEMM_API {
 
         // Minimale Antwort - nur notwendige Daten (DSGVO!)
         return new WP_REST_Response( array(
-            'startnumber' => (int) $p['startnumber'],
+            'startnumber' => $p['startnumber'], // String: '1', '01', '007a'
             'first_name'  => $p['first_name'],
             'phone'       => $p['phone'],
             'shirt_size'  => $p['shirt_size'],
@@ -210,8 +210,9 @@ class OEMM_API {
             OEMM_Participant::ensure_row( $cid );
             OEMM_Token::get_or_create( $cid );
 
-            if ( isset( $row['startnumber'] ) && $row['startnumber'] ) {
-                OEMM_Participant::set_startnumber( $cid, intval( $row['startnumber'] ) );
+            if ( isset( $row['startnumber'] ) && $row['startnumber'] !== null && $row['startnumber'] !== '' ) {
+                // Startnummer als String übergeben (z.B. '01', '007a')
+                OEMM_Participant::set_startnumber( $cid, (string) $row['startnumber'] );
             }
             $count++;
         }

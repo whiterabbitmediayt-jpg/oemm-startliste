@@ -225,12 +225,13 @@ class OEMM_Participant {
             $participants[] = self::get( (int) $cid );
         }
 
-        // Sortierung: nach Startnummer (NULL ans Ende)
+        // Sortierung: natürliche Sortierung nach Startnummer (NULL ans Ende)
+        // Damit 1 < 01 < 2 < 007a korrekt sortiert werden
         usort( $participants, function( $a, $b ) {
             if ( $a['startnumber'] === null && $b['startnumber'] === null ) return 0;
             if ( $a['startnumber'] === null ) return 1;
             if ( $b['startnumber'] === null ) return -1;
-            return $a['startnumber'] <=> $b['startnumber'];
+            return strnatcasecmp( (string) $a['startnumber'], (string) $b['startnumber'] );
         });
 
         return $participants;
@@ -272,7 +273,10 @@ class OEMM_Participant {
     /**
      * Startnummer setzen
      */
-    public static function set_startnumber( int $customer_id, ?int $number ): bool {
+    /**
+     * Startnummer als String speichern (z.B. '1', '01', '007a')
+     */
+    public static function set_startnumber( int $customer_id, ?string $number ): bool {
         global $wpdb;
         $table = $wpdb->prefix . 'oemm_participants';
         $year  = OEMM_Settings::get_event_year();
@@ -283,7 +287,7 @@ class OEMM_Participant {
             $table,
             array( 'startnumber' => $number ),
             array( 'customer_id' => $customer_id, 'event_year' => $year ),
-            array( is_null( $number ) ? '%s' : '%d' ),
+            array( '%s' ),
             array( '%d', '%d' )
         );
 

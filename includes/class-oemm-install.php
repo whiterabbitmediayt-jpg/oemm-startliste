@@ -50,7 +50,7 @@ class OEMM_Install {
             id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             customer_id     BIGINT UNSIGNED NOT NULL,
             event_year      SMALLINT UNSIGNED NOT NULL DEFAULT 2026,
-            startnumber     SMALLINT UNSIGNED DEFAULT NULL COMMENT 'Startnummer (händisch oder auto vergeben)',
+            startnumber     VARCHAR(20) DEFAULT NULL COMMENT 'Startnummer (z.B. 1, 01, 007a — als Text gespeichert)',
             token_app       VARCHAR(64)  DEFAULT NULL COMMENT 'Token für App-QR-Code',
             token_paper     VARCHAR(64)  DEFAULT NULL COMMENT 'Token für Zettel-QR-Code',
             scan_count_app  INT UNSIGNED NOT NULL DEFAULT 0,
@@ -67,6 +67,15 @@ class OEMM_Install {
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
+
+        // Migration: SMALLINT -> VARCHAR(20) falls alte Spalte noch existiert
+        $col_type = $wpdb->get_var( "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = '{$table}'
+            AND COLUMN_NAME = 'startnumber'" );
+        if ( $col_type && strtolower( $col_type ) !== 'varchar' ) {
+            $wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN startnumber VARCHAR(20) DEFAULT NULL" );
+        }
 
         update_option( 'oemm_db_version', OEMM_DB_VERSION );
     }
