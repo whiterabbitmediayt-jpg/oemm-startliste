@@ -327,11 +327,7 @@ class OEMM_Admin {
     public static function ajax_clear_update_cache() {
         check_ajax_referer( 'oemm_admin', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized', 403 );
-
-        delete_transient( 'oemm_github_release' );
-        delete_site_transient( 'update_plugins' );
-        wp_update_plugins();
-
+        OEMM_Updater::clear_cache();
         wp_send_json_success( 'Update-Cache geleert.' );
     }
 

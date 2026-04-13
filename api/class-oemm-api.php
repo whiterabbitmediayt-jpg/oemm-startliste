@@ -183,9 +183,7 @@ class OEMM_API {
      * Body: { "token": "XYZ", "photo_url": "https://..." }
      */
     public static function clear_update_cache( WP_REST_Request $request ): WP_REST_Response {
-        delete_transient( 'oemm_github_release' );
-        delete_site_transient( 'update_plugins' );
-        wp_update_plugins();
+        OEMM_Updater::clear_cache();
         return new WP_REST_Response( array( 'success' => true, 'message' => 'Update-Cache geleert.' ), 200 );
     }
 
