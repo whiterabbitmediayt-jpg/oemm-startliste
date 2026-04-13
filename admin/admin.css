@@ -1,0 +1,121 @@
+.oemm-wrap { max-width: 1400px; }
+
+/* Toolbar */
+.oemm-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+}
+.oemm-toolbar-actions { margin-left: auto; display: flex; gap: 8px; }
+
+/* Status Badge */
+.oemm-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+}
+.oemm-status-badge.active   { background: #d4edda; color: #155724; }
+.oemm-status-badge.inactive { background: #f8d7da; color: #721c24; }
+
+/* Tabelle */
+.oemm-table-wrapper { overflow-x: auto; }
+#oemm-startliste-table th, #oemm-startliste-table td { vertical-align: middle; }
+.oemm-startnumber-input { text-align: center; font-weight: bold; }
+
+/* Token */
+.oemm-token { font-size: 10px; color: #666; display: block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oemm-token-cell { white-space: nowrap; }
+.oemm-qr-preview { margin-top: 6px; }
+.oemm-qr-preview img { border: 2px solid #ddd; border-radius: 4px; }
+
+/* Order Status */
+.oemm-order-status { padding: 2px 8px; border-radius: 3px; font-size: 11px; text-transform: uppercase; }
+.status-completed  { background: #d4edda; color: #155724; }
+.status-processing { background: #fff3cd; color: #856404; }
+
+/* Footer */
+.oemm-footer-info { margin-top: 12px; color: #666; }
+
+/* Stats */
+.oemm-stats-grid { display: flex; gap: 20px; margin-bottom: 32px; flex-wrap: wrap; }
+.oemm-stat-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 8px;
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 160px;
+}
+.oemm-stat-number { font-size: 48px; font-weight: bold; line-height: 1; }
+.oemm-stat-label  { font-size: 14px; color: #666; margin-top: 4px; }
+.oemm-stat-pct    { font-size: 24px; font-weight: bold; color: #0073aa; margin-top: 8px; }
+.oemm-stat-sub    { font-size: 12px; color: #999; margin-top: 4px; }
+.oemm-stat-digital { border-color: #28a745; }
+.oemm-stat-paper   { border-color: #6c757d; }
+
+/* Progress Bar */
+.oemm-progress-section { margin-bottom: 32px; }
+.oemm-progress-bar-wrap {
+    background: #e9ecef;
+    border-radius: 8px;
+    height: 36px;
+    overflow: hidden;
+    max-width: 600px;
+}
+.oemm-progress-bar {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    color: #fff;
+    font-weight: bold;
+    min-width: 60px;
+    transition: width 0.8s ease;
+}
+
+/* Felder-Grid (Settings + Export) */
+.oemm-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+.oemm-field-checkbox {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color 0.15s;
+}
+.oemm-field-checkbox:hover { border-color: #0073aa; }
+.oemm-field-checkbox input { margin-right: 6px; }
+
+/* Export Profile */
+.oemm-export-profiles { margin-bottom: 20px; }
+.oemm-profile-btn.active { background: #0073aa; color: #fff; border-color: #0073aa; }
+
+/* Suchfeld */
+.oemm-search-bar { margin-bottom: 10px; }
+
+/* Notice */
+#oemm-notice { padding: 10px 16px; margin: 12px 0; border-radius: 4px; }
+#oemm-notice.success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+#oemm-notice.error   { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }

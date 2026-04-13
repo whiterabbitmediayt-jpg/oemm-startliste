@@ -1,0 +1,88 @@
+/* ÖMM Dashboard Card */
+.oemm-dashboard-section {
+    margin-bottom: 32px;
+}
+
+.oemm-app-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    max-width: 480px;
+}
+
+.oemm-app-card-header {
+    background: rgba(255,255,255,0.1);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.oemm-app-card-header h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.oemm-logo {
+    font-size: 28px;
+}
+
+.oemm-app-card-body {
+    padding: 24px;
+    text-align: center;
+}
+
+/* Startnummer-Anzeige */
+.oemm-startnumber-display {
+    margin-bottom: 20px;
+}
+
+.oemm-sn-label {
+    display: block;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.oemm-sn-number {
+    display: block;
+    font-size: 64px;
+    font-weight: bold;
+    color: #f0c040;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* App-Button */
+.oemm-app-button {
+    display: inline-block;
+    background: #f0c040;
+    color: #1a1a2e;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 12px rgba(240, 192, 64, 0.4);
+}
+
+.oemm-app-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(240, 192, 64, 0.5);
+    color: #1a1a2e;
+    text-decoration: none;
+}
+
+.oemm-app-hint {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    margin-top: 12px;
+    margin-bottom: 0;
+}
