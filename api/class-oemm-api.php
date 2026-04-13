@@ -53,6 +53,13 @@ class OEMM_API {
             'permission_callback' => array( __CLASS__, 'check_api_key' ),
         ) );
 
+        // Admin: Massen-Import (nur für Admins)
+        register_rest_route( $ns, '/import', array(
+            'methods'             => 'POST',
+            'callback'            => array( __CLASS__, 'import_participants' ),
+            'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        ) );
+
         // Admin: Update-Cache leeren (nur für Admins)
         register_rest_route( $ns, '/clear-update-cache', array(
             'methods'             => 'POST',
@@ -182,6 +189,36 @@ class OEMM_API {
      *
      * Body: { "token": "XYZ", "photo_url": "https://..." }
      */
+    /**
+     * POST /oemm/v1/import
+     * Massen-Import: customer_id + optional startnumber
+     * Body: { "data": [{"customer_id": 123, "startnumber": 1}, ...] }
+     */
+    public static function import_participants( WP_REST_Request $request ): WP_REST_Response {
+        $data = $request->get_json_params();
+        $rows = $data['data'] ?? array();
+
+        if ( empty( $rows ) || ! is_array( $rows ) ) {
+            return new WP_REST_Response( array( 'error' => 'Keine Daten.' ), 400 );
+        }
+
+        $count = 0;
+        foreach ( $rows as $row ) {
+            $cid = intval( $row['customer_id'] ?? 0 );
+            if ( ! $cid ) continue;
+
+            OEMM_Participant::ensure_row( $cid );
+            OEMM_Token::get_or_create( $cid );
+
+            if ( isset( $row['startnumber'] ) && $row['startnumber'] ) {
+                OEMM_Participant::set_startnumber( $cid, intval( $row['startnumber'] ) );
+            }
+            $count++;
+        }
+
+        return new WP_REST_Response( array( 'success' => true, 'imported' => $count ), 200 );
+    }
+
     public static function clear_update_cache( WP_REST_Request $request ): WP_REST_Response {
         OEMM_Updater::clear_cache();
         return new WP_REST_Response( array( 'success' => true, 'message' => 'Update-Cache geleert.' ), 200 );
