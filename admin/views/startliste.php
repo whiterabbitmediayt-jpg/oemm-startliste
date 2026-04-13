@@ -47,15 +47,12 @@
                         Firma <span class="oemm-sort-icon">↕</span>
                     </th>
                     <th class="oemm-th-sort" data-col="4" style="cursor:pointer">
-                        E-Mail <span class="oemm-sort-icon">↕</span>
-                    </th>
-                    <th class="oemm-th-sort" data-col="5" style="cursor:pointer">
                         Telefon <span class="oemm-sort-icon">↕</span>
                     </th>
-                    <th class="oemm-th-sort" data-col="6" style="cursor:pointer">
+                    <th class="oemm-th-sort" data-col="5" style="cursor:pointer">
                         T-Shirt <span class="oemm-sort-icon">↕</span>
                     </th>
-                    <th class="oemm-th-sort" data-col="7" style="cursor:pointer">
+                    <th class="oemm-th-sort" data-col="6" style="cursor:pointer">
                         Produkt <span class="oemm-sort-icon">↕</span>
                     </th>
                     <th style="width:100px">Speichern</th>
@@ -118,11 +115,6 @@
 
                     <!-- Firma -->
                     <td data-val="<?php echo esc_attr( $firma ); ?>"><?php echo esc_html( $firma ); ?></td>
-
-                    <!-- E-Mail -->
-                    <td data-val="<?php echo esc_attr( $email ); ?>">
-                        <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
-                    </td>
 
                     <!-- Telefon -->
                     <td data-val="<?php echo esc_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></td>
