@@ -247,10 +247,6 @@ class OEMM_API {
 
         return new WP_REST_Response( array( 'success' => true, 'count' => count( $photos ) ), 200 );
     }
-}
-
-    // TEMP DEBUG - nach Test entfernen
-    // GET /oemm/v1/debug-startnumber?cid=136
 
     /**
      * TEMP: GET /oemm/v1/debug — DB-Spaltentyp und Beispielwerte prüfen
@@ -268,5 +264,4 @@ class OEMM_API {
             'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         ) );
     }
-
 }
