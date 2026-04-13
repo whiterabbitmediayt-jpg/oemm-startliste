@@ -233,6 +233,16 @@ class OEMM_API {
                 }
             }
 
+            // billing_phone in WC-Customer schreiben
+            if ( isset( $row['billing_phone'] ) && $row['billing_phone'] !== '' ) {
+                update_user_meta( $cid, 'billing_phone', sanitize_text_field( $row['billing_phone'] ) );
+            }
+
+            // geburtsdatum in User-Meta schreiben
+            if ( isset( $row['geburtsdatum'] ) && $row['geburtsdatum'] !== '' ) {
+                update_user_meta( $cid, 'billing_geburtsdatum', sanitize_text_field( $row['geburtsdatum'] ) );
+            }
+
             $count++;
         }
 
