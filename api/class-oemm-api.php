@@ -54,6 +54,12 @@ class OEMM_API {
         ) );
 
         // Admin: Massen-Import (nur für Admins)
+        register_rest_route( $ns, '/migrate', array(
+            'methods'             => 'POST',
+            'callback'            => array( __CLASS__, 'run_migration' ),
+            'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        ) );
+
         register_rest_route( $ns, '/import', array(
             'methods'             => 'POST',
             'callback'            => array( __CLASS__, 'import_participants' ),
@@ -244,4 +250,31 @@ class OEMM_API {
 
         return new WP_REST_Response( array( 'success' => true, 'count' => count( $photos ) ), 200 );
     }
+
+    /**
+     * POST /oemm/v1/migrate — Einmalige DB-Migration (nur Admin)
+     */
+    public static function run_migration( WP_REST_Request $request ): WP_REST_Response {
+        global $wpdb;
+        $table = $wpdb->prefix . 'oemm_participants';
+
+        // Spaltentyp prüfen
+        $col_type = $wpdb->get_var( "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$table}' AND COLUMN_NAME = 'startnumber'" );
+
+        if ( strtolower( $col_type ) === 'varchar' ) {
+            return new WP_REST_Response( array( 'status' => 'already_varchar', 'col_type' => $col_type ), 200 );
+        }
+
+        // Migration durchführen
+        $result = $wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN startnumber VARCHAR(20) DEFAULT NULL" );
+
+        $col_type_after = $wpdb->get_var( "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$table}' AND COLUMN_NAME = 'startnumber'" );
+
+        return new WP_REST_Response( array(
+            'status'         => 'migrated',
+            'col_type_before' => $col_type,
+            'col_type_after'  => $col_type_after,
+        ), 200 );
+    }
+
 }
