@@ -89,7 +89,7 @@ class OEMM_API {
      */
     public static function status( WP_REST_Request $request ): WP_REST_Response {
         return new WP_REST_Response( array(
-            'plugin'  => 'OEMM Startliste',
+            'plugin'  => 'ÖMM Startliste',
             'version' => OEMM_VERSION,
             'year'    => OEMM_Settings::get_event_year(),
             'active'  => OEMM_Settings::is_active(),

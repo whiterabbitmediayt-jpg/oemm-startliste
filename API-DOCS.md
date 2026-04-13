@@ -1,4 +1,4 @@
-# OEMM Startliste — REST API Dokumentation v1
+# ÖMM Startliste — REST API Dokumentation v1
 
 **Base URL:** `https://mopedmarathon.at/wp-json/oemm/v1`
 
@@ -14,7 +14,7 @@ Gibt Plugin-Version, Event-Jahr und Aktiv-Status zurück.
 **Response:**
 ```json
 {
-  "plugin": "OEMM Startliste",
+  "plugin": "ÖMM Startliste",
   "version": "1.0.0",
   "year": 2026,
   "active": true

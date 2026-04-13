@@ -1,4 +1,4 @@
-# Changelog — OEMM Startliste
+# Changelog — ÖMM Startliste
 
 Alle wichtigen Änderungen werden hier dokumentiert.
 Format: [Semantisches Versioning](https://semver.org/) — MAJOR.MINOR.PATCH
