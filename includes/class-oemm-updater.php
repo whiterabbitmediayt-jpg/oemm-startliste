@@ -37,10 +37,8 @@ class OEMM_Updater {
             $args['headers'] = array( 'Authorization' => 'token ' . $token );
         }
 
-        $response = wp_remote_get(
-            "https://api.github.com/repos/{self::$github_user}/{self::$github_repo}/releases/latest",
-            $args
-        );
+        $url = 'https://api.github.com/repos/' . self::$github_user . '/' . self::$github_repo . '/releases/latest';
+        $response = wp_remote_get( $url, $args );
 
         if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
             return null;
