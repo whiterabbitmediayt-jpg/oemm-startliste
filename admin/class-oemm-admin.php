@@ -98,8 +98,10 @@ class OEMM_Admin {
             true
         );
         wp_localize_script( 'oemm-admin', 'oemm_ajax', array(
-            'url'   => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce( 'oemm_admin' ),
+            'url'         => admin_url( 'admin-ajax.php' ),
+            'nonce'       => wp_create_nonce( 'oemm_admin' ),
+            'plugins_url' => admin_url( 'plugins.php' ),
+            'app_url'     => OEMM_Settings::get_app_url(),
         ) );
     }
 

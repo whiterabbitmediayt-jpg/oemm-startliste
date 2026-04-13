@@ -147,9 +147,13 @@ jQuery(function($) {
             nonce: oemm_ajax.nonce
         }).then(function(res) {
             if (res.success) {
-                showNotice('✅ Update-Cache geleert. Seite wird neu geladen...', 'success');
-                setTimeout(function() { location.href = '<?php echo admin_url("plugins.php"); ?>'; }, 1500);
+                showNotice('✅ Update-Cache geleert. Weiterleitung...', 'success');
+                setTimeout(function() {
+                    window.location.href = oemm_ajax.plugins_url;
+                }, 1500);
             }
+        }).fail(function(xhr) {
+            showNotice('Fehler: ' + xhr.status + ' ' + xhr.statusText, 'error');
         }).always(function() {
             $btn.prop('disabled', false).text('🔄 Updates prüfen');
         });
