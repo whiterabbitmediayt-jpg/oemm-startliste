@@ -1,7 +1,4 @@
-<?php defined( 'ABSPATH' ) || exit;
-$all_labels   = OEMM_Settings::all_fields();
-$active_keys  = array_keys( array_filter( $fields ) );
-?>
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wrap oemm-wrap">
     <h1>ÖMM Startliste <?php echo esc_html( $year ); ?></h1>
 
@@ -29,75 +26,117 @@ $active_keys  = array_keys( array_filter( $fields ) );
 
     <!-- Suchfeld -->
     <div class="oemm-search-bar">
-        <input type="text" id="oemm-search" placeholder="Suche nach Name, E-Mail, Startnummer..." style="width:300px">
+        <input type="text" id="oemm-search" placeholder="Suche nach Name, Firma, E-Mail, Startnummer..." style="width:340px">
         <span id="oemm-search-count" style="color:#666;margin-left:10px"></span>
     </div>
 
     <div class="oemm-table-wrapper">
-        <table id="oemm-startliste-table" class="wp-list-table widefat fixed striped">
+        <table id="oemm-startliste-table" class="wp-list-table widefat striped oemm-sortable">
             <thead>
                 <tr>
-                    <th style="width:70px">Startnr.</th>
-                    <?php foreach ( $active_keys as $key ) :
-                        if ( $key === 'startnumber' ) continue; // schon als erste Spalte
-                        $label = $all_labels[ $key ] ?? $key;
-                    ?>
-                    <th><?php echo esc_html( $label ); ?></th>
-                    <?php endforeach; ?>
+                    <th class="oemm-th-sort" data-col="0" data-type="num" style="width:80px;cursor:pointer">
+                        Startnr. <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="1" style="cursor:pointer">
+                        Vorname <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="2" style="cursor:pointer">
+                        Nachname <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="3" style="cursor:pointer">
+                        Firma <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="4" style="cursor:pointer">
+                        E-Mail <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="5" style="cursor:pointer">
+                        Telefon <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="6" style="cursor:pointer">
+                        T-Shirt <span class="oemm-sort-icon">↕</span>
+                    </th>
+                    <th class="oemm-th-sort" data-col="7" style="cursor:pointer">
+                        Produkt <span class="oemm-sort-icon">↕</span>
+                    </th>
                     <th style="width:100px">Speichern</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ( empty( $participants ) ) : ?>
-                    <tr><td colspan="30">Keine Teilnehmer gefunden. Bitte Produkt-IDs in den Einstellungen prüfen.</td></tr>
+                    <tr><td colspan="9">Keine Teilnehmer gefunden. Bitte Produkt-IDs in den Einstellungen prüfen.</td></tr>
                 <?php endif; ?>
+
                 <?php foreach ( $participants as $p ) :
-                    $search_text = strtolower( implode( ' ', array(
-                        $p['billing_first_name'] ?? '',
-                        $p['billing_last_name']  ?? '',
-                        $p['customer_email']     ?? '',
-                        $p['startnumber']        ?? '',
-                    ) ) );
+                    $first    = $p['billing_first_name'] ?? '';
+                    $last     = $p['billing_last_name']  ?? '';
+                    $firma    = $p['billing_company']    ?? '';
+                    $email    = $p['customer_email']     ?? '';
+                    $phone    = $p['billing_phone']      ?? '';
+                    $shirt    = $p['shirt_size']         ?? '';
+                    $produkt  = $p['product_name']       ?? '';
+                    $order_id = $p['order_id']           ?? '';
+                    $sn       = $p['startnumber']        ?? '';
+                    $cid      = $p['customer_id'];
+
+                    $search_text = strtolower( implode( ' ', [ $first, $last, $firma, $email, $sn ] ) );
                 ?>
-                <tr data-customer-id="<?php echo esc_attr( $p['customer_id'] ); ?>"
+                <tr data-customer-id="<?php echo esc_attr( $cid ); ?>"
                     data-search="<?php echo esc_attr( $search_text ); ?>">
 
-                    <!-- Startnummer (immer erste Spalte, editierbar) -->
-                    <td>
+                    <!-- Startnummer -->
+                    <td data-val="<?php echo esc_attr( $sn ); ?>">
                         <input type="number"
                                class="oemm-startnumber-input"
-                               value="<?php echo esc_attr( $p['startnumber'] ?? '' ); ?>"
+                               value="<?php echo esc_attr( $sn ); ?>"
                                min="1"
-                               style="width:58px"
-                               data-customer-id="<?php echo esc_attr( $p['customer_id'] ); ?>"
+                               style="width:60px"
+                               data-customer-id="<?php echo esc_attr( $cid ); ?>"
                         />
                     </td>
 
-                    <!-- Dynamische Spalten -->
-                    <?php foreach ( $active_keys as $key ) :
-                        if ( $key === 'startnumber' ) continue;
-                        $val = $p[ $key ] ?? '';
-                    ?>
-                    <td><?php
-                        if ( $key === 'order_id' && $val ) {
-                            echo '<a href="' . esc_url( admin_url( 'post.php?post=' . $val . '&action=edit' ) ) . '" target="_blank">#' . esc_html( $val ) . '</a>';
-                        } elseif ( $key === 'order_status' && $val ) {
-                            echo '<span class="oemm-order-status status-' . esc_attr( $val ) . '">' . esc_html( $val ) . '</span>';
-                        } elseif ( $key === 'token_app' || $key === 'token_paper' ) {
-                            $tok = $key === 'token_app' ? $tokens['app'] : $tokens['paper'];
-                            echo $tok ? '<code class="oemm-token">' . esc_html( $tok ) . '</code>' : '<em>—</em>';
-                        } elseif ( $key === 'order_total' || $key === 'order_subtotal' || $key === 'line_total' ) {
-                            echo $val !== null && $val !== '' ? esc_html( number_format( (float)$val, 2, ',', '.' ) ) . ' €' : '';
-                        } else {
-                            echo esc_html( $val );
-                        }
-                    ?></td>
-                    <?php endforeach; ?>
+                    <!-- Vorname — klickbar zur Bestellung -->
+                    <td data-val="<?php echo esc_attr( $first ); ?>">
+                        <?php if ( $order_id ) : ?>
+                            <a href="<?php echo esc_url( admin_url( 'post.php?post=' . $order_id . '&action=edit' ) ); ?>" target="_blank" title="Bestellung #<?php echo esc_attr( $order_id ); ?> öffnen">
+                                <?php echo esc_html( $first ); ?>
+                            </a>
+                        <?php else : ?>
+                            <?php echo esc_html( $first ); ?>
+                        <?php endif; ?>
+                    </td>
 
-                    <!-- Startnummer speichern -->
+                    <!-- Nachname — klickbar zur Bestellung -->
+                    <td data-val="<?php echo esc_attr( $last ); ?>">
+                        <?php if ( $order_id ) : ?>
+                            <a href="<?php echo esc_url( admin_url( 'post.php?post=' . $order_id . '&action=edit' ) ); ?>" target="_blank" title="Bestellung #<?php echo esc_attr( $order_id ); ?> öffnen">
+                                <?php echo esc_html( $last ); ?>
+                            </a>
+                        <?php else : ?>
+                            <?php echo esc_html( $last ); ?>
+                        <?php endif; ?>
+                    </td>
+
+                    <!-- Firma -->
+                    <td data-val="<?php echo esc_attr( $firma ); ?>"><?php echo esc_html( $firma ); ?></td>
+
+                    <!-- E-Mail -->
+                    <td data-val="<?php echo esc_attr( $email ); ?>">
+                        <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+                    </td>
+
+                    <!-- Telefon -->
+                    <td data-val="<?php echo esc_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></td>
+
+                    <!-- T-Shirt -->
+                    <td data-val="<?php echo esc_attr( $shirt ); ?>"><?php echo esc_html( $shirt ); ?></td>
+
+                    <!-- Produkt -->
+                    <td data-val="<?php echo esc_attr( $produkt ); ?>"><?php echo esc_html( $produkt ); ?></td>
+
+                    <!-- Speichern -->
                     <td>
                         <button class="oemm-btn-save-startnumber button button-small button-primary"
-                                data-customer-id="<?php echo esc_attr( $p['customer_id'] ); ?>"
+                                data-customer-id="<?php echo esc_attr( $cid ); ?>"
                                 title="Startnummer speichern">✓ Speichern</button>
                     </td>
                 </tr>
@@ -109,16 +148,6 @@ $active_keys  = array_keys( array_filter( $fields ) );
     <p class="oemm-footer-info">
         <strong><?php echo count( $participants ); ?></strong> Teilnehmer |
         Startnummern vergeben: <strong><?php echo count( array_filter( $participants, fn($p) => ! is_null( $p['startnumber'] ) ) ); ?></strong> |
-        <a href="<?php echo esc_url( admin_url( 'admin.php?page=oemm-settings' ) ); ?>">Angezeigte Felder anpassen</a>
+        <a href="<?php echo esc_url( admin_url( 'admin.php?page=oemm-settings' ) ); ?>">Einstellungen</a>
     </p>
-</div>
-
-<!-- QR Modal -->
-<div id="oemm-qr-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center">
-    <div style="background:#fff;padding:24px;border-radius:8px;text-align:center;max-width:300px">
-        <h3 id="oemm-modal-title">QR Code</h3>
-        <div id="oemm-modal-img"></div>
-        <p id="oemm-modal-token" style="font-size:11px;color:#666;word-break:break-all"></p>
-        <button id="oemm-modal-close" class="button button-secondary" style="margin-top:8px">Schließen</button>
-    </div>
 </div>

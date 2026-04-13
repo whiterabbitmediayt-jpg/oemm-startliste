@@ -302,3 +302,53 @@ jQuery(function($) {
     });
 
 });
+
+// -------------------------------------------------------------------------
+// Tabellen-Sortierung
+// -------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    var table = document.getElementById('oemm-startliste-table');
+    if (!table) return;
+
+    var sortState = { col: -1, asc: true };
+
+    table.querySelectorAll('th.oemm-th-sort').forEach(function(th) {
+        th.addEventListener('click', function() {
+            var col  = parseInt(th.dataset.col);
+            var type = th.dataset.type || 'str';
+            var asc  = (sortState.col === col) ? !sortState.asc : true;
+            sortState = { col: col, asc: asc };
+
+            // Icons zurücksetzen
+            table.querySelectorAll('th.oemm-th-sort .oemm-sort-icon').forEach(function(ic) {
+                ic.textContent = '\u2195';
+            });
+            th.querySelector('.oemm-sort-icon').textContent = asc ? '\u2191' : '\u2193';
+
+            var tbody = table.querySelector('tbody');
+            var rows  = Array.from(tbody.querySelectorAll('tr[data-customer-id]'));
+
+            rows.sort(function(a, b) {
+                var tds = [a, b].map(function(r) {
+                    var td = r.querySelectorAll('td')[col];
+                    return td ? (td.dataset.val || td.textContent).trim() : '';
+                });
+
+                if (type === 'num') {
+                    var na = parseFloat(tds[0]) || 0;
+                    var nb = parseFloat(tds[1]) || 0;
+                    // Leere Startnummern immer ans Ende
+                    if (!tds[0] && tds[1]) return 1;
+                    if (tds[0] && !tds[1]) return -1;
+                    return asc ? na - nb : nb - na;
+                } else {
+                    return asc
+                        ? tds[0].localeCompare(tds[1], 'de')
+                        : tds[1].localeCompare(tds[0], 'de');
+                }
+            });
+
+            rows.forEach(function(r) { tbody.appendChild(r); });
+        });
+    });
+});

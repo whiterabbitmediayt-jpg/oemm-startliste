@@ -119,3 +119,21 @@
 #oemm-notice { padding: 10px 16px; margin: 12px 0; border-radius: 4px; }
 #oemm-notice.success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
 #oemm-notice.error   { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+
+/* Sortierbare Spalten */
+.oemm-sortable th.oemm-th-sort {
+    user-select: none;
+    white-space: nowrap;
+}
+.oemm-sortable th.oemm-th-sort:hover {
+    background: #f0f0f1;
+}
+.oemm-sort-icon {
+    color: #aaa;
+    font-size: 11px;
+    margin-left: 3px;
+}
+.oemm-sortable th.oemm-th-sort a {
+    color: inherit;
+    text-decoration: none;
+}
