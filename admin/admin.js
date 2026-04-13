@@ -60,9 +60,9 @@ jQuery(function($) {
     // -------------------------------------------------------------------------
 
     $('#oemm-btn-fill-startnumbers').on('click', function() {
-        if (!confirm('Alle Teilnehmer ohne Startnummer werden jetzt fortlaufend befuellt. Bereits vergebene Nummern bleiben unveraendert. Fortfahren?')) return;
+        if (!confirm('Alle Teilnehmer ohne Startnummer werden jetzt fortlaufend befüllt. Bereits vergebene Nummern bleiben unverändert. Fortfahren?')) return;
 
-        var $btn = $(this).prop('disabled', true).text('Wird befuellt...');
+        var $btn = $(this).prop('disabled', true).text('Wird befüllt...');
 
         ajaxPost('fill_startnumbers', {}, 'Startnummern aufgefüllt!')
         .then(function(res) {
@@ -291,7 +291,7 @@ jQuery(function($) {
             return;
         }
 
-        if (!confirm(parsed.length + ' Eintraege importieren. Bestehende Startnummern werden ueberschrieben!')) return;
+        if (!confirm(parsed.length + ' Einträge importieren. Bestehende Startnummern werden überschrieben!')) return;
 
         var $btn = $(this).prop('disabled', true).text('Importiere...');
 
