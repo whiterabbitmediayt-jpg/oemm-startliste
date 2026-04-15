@@ -3,7 +3,7 @@
  * Plugin Name:       ÖMM Startliste
  * Plugin URI:        https://mopedmarathon.at
  * Description:       Verwaltung der Startliste für den Ötztaler Moped Marathon. Startnummern, QR-Codes, App-Anbindung.
- * Version:           1.4.9
+ * Version:           1.4.5
  * Author:            Manuel Ribis GmbH
  * Author URI:        https://mopedmarathon.at
  * License:           GPL-2.0+
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Plugin-Konstanten
-define( 'OEMM_VERSION',     '1.4.9' );
+define( 'OEMM_VERSION',     '1.5.0' );
 define( 'OEMM_PLUGIN_FILE', __FILE__ );
 define( 'OEMM_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'OEMM_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,7 @@ require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-participant.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-token.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-qr.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-hooks.php';
+require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-firebase.php';
 require_once OEMM_PLUGIN_DIR . 'includes/class-oemm-updater.php';
 require_once OEMM_PLUGIN_DIR . 'admin/class-oemm-admin.php';
 require_once OEMM_PLUGIN_DIR . 'frontend/class-oemm-frontend.php';
@@ -41,6 +42,11 @@ register_deactivation_hook( __FILE__, array( 'OEMM_Install', 'deactivate' ) );
 /**
  * Plugin booten
  */
+// WP-Cron Hook für asynchronen Firebase-Sync
+add_action( 'oemm_firebase_sync', function( int $customer_id ) {
+    OEMM_Firebase::sync_participant( $customer_id );
+} );
+
 function oemm_init() {
     if ( ! class_exists( 'WooCommerce' ) ) {
         add_action( 'admin_notices', function() {

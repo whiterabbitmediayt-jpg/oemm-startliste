@@ -91,6 +91,14 @@ class OEMM_Settings {
         return (int) get_option( 'oemm_startnumber_start', 1 );
     }
 
+    public static function get_firebase_url(): string {
+        return (string) get_option( 'oemm_firebase_url', '' );
+    }
+
+    public static function get_firebase_secret(): string {
+        return (string) get_option( 'oemm_firebase_secret', '' );
+    }
+
     /** Aktivierte Felder als Array */
     public static function get_fields(): array {
         $saved = get_option( 'oemm_fields', null );
@@ -142,6 +150,13 @@ class OEMM_Settings {
         if ( isset( $data['api_key'] ) ) {
             $key = preg_replace( '/[^a-zA-Z0-9\-_]/', '', $data['api_key'] );
             update_option( 'oemm_api_key', $key );
+        }
+        if ( isset( $data['firebase_url'] ) ) {
+            update_option( 'oemm_firebase_url', esc_url_raw( trim( $data['firebase_url'] ) ) );
+        }
+        if ( isset( $data['firebase_secret'] ) && ! empty( $data['firebase_secret'] ) ) {
+            // Nur speichern wenn nicht leer (verhindert versehentliches Loeschen)
+            update_option( 'oemm_firebase_secret', sanitize_text_field( trim( $data['firebase_secret'] ) ) );
         }
         // Daten-Lösch-Schalter (bewusst explizit)
         update_option( 'oemm_delete_data_on_uninstall', isset( $data['delete_data_on_uninstall'] ) ? '1' : '0' );

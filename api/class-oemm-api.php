@@ -73,6 +73,13 @@ class OEMM_API {
             'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         ) );
 
+        // Fahrerliste komplett - für Urban's Besenwagen-App (API-Key geschützt)
+        register_rest_route( $ns, '/participants', array(
+            'methods'             => 'GET',
+            'callback'            => array( __CLASS__, 'get_participants' ),
+            'permission_callback' => array( __CLASS__, 'check_api_key' ),
+        ) );
+
         // Foto-Zuordnung - für Christian & Marcel (Fotopoint)
         register_rest_route( $ns, '/photo', array(
             'methods'             => 'POST',
@@ -156,12 +163,51 @@ class OEMM_API {
         // Minimale Antwort - nur notwendige Daten (DSGVO!)
         return new WP_REST_Response( array(
             'startnumber' => $p['startnumber'], // String: '1', '01', '007a'
-            'first_name'  => $p['first_name'],
-            'phone'       => $p['phone'],
+            'first_name'  => $p['billing_first_name'],
+            'last_name'   => $p['billing_last_name'],
+            'company'     => $p['billing_company'],
+            'phone'       => $p['billing_phone'],
+            'qr_url'      => OEMM_QR::get_target_url( $token ),
             'shirt_size'  => $p['shirt_size'],
             'order_id'    => $p['order_id'],
             'channel'     => $channel,
         ), 200 );
+    }
+
+    /**
+     * GET /oemm/v1/participants
+     *
+     * Gibt die komplette Fahrerliste zurück (nur für Urban / API-Key geschützt).
+     * Enthält nur die für die Besenwagen-App relevanten Felder.
+     *
+     * Response:
+     * [
+     *   { "startnumber": "42", "first_name": "Max", "last_name": "Muster", "company": "Firma GmbH",
+     *     "phone": "+436601234567", "qr_url": "https://moped-tracker.web.app/t/abc123",
+     *     "token_app": "abc123..." },
+     *   ...
+     * ]
+     */
+    public static function get_participants( WP_REST_Request $request ): WP_REST_Response {
+        $participants = OEMM_Participant::get_all();
+        $result       = array();
+
+        foreach ( $participants as $p ) {
+            $token = $p['token_app'] ?? '';
+            if ( ! $token ) continue;
+
+            $result[] = array(
+                'startnumber' => $p['startnumber'],
+                'first_name'  => $p['billing_first_name'],
+                'last_name'   => $p['billing_last_name'],
+                'company'     => $p['billing_company'],
+                'phone'       => $p['billing_phone'],
+                'qr_url'      => OEMM_QR::get_target_url( $token ),
+                'token_app'   => $token,
+            );
+        }
+
+        return new WP_REST_Response( $result, 200 );
     }
 
     /**
@@ -220,29 +266,6 @@ class OEMM_API {
                 // Startnummer als String übergeben (z.B. '01', '007a')
                 OEMM_Participant::set_startnumber( $cid, (string) $row['startnumber'] );
             }
-
-            // billing_title in Order-Meta schreiben (1=Herr, 2=Frau)
-            if ( isset( $row['billing_title'] ) && $row['billing_title'] !== '' ) {
-                $p = OEMM_Participant::get( $cid );
-                if ( ! empty( $p['order_id'] ) ) {
-                    $order = wc_get_order( $p['order_id'] );
-                    if ( $order ) {
-                        $order->update_meta_data( '_billing_title', sanitize_text_field( $row['billing_title'] ) );
-                        $order->save();
-                    }
-                }
-            }
-
-            // billing_phone in WC-Customer schreiben
-            if ( isset( $row['billing_phone'] ) && $row['billing_phone'] !== '' ) {
-                update_user_meta( $cid, 'billing_phone', sanitize_text_field( $row['billing_phone'] ) );
-            }
-
-            // geburtsdatum in User-Meta schreiben
-            if ( isset( $row['geburtsdatum'] ) && $row['geburtsdatum'] !== '' ) {
-                update_user_meta( $cid, 'billing_geburtsdatum', sanitize_text_field( $row['geburtsdatum'] ) );
-            }
-
             $count++;
         }
 
