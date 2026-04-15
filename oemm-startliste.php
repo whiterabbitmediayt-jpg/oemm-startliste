@@ -3,7 +3,7 @@
  * Plugin Name:       ÖMM Startliste
  * Plugin URI:        https://mopedmarathon.at
  * Description:       Verwaltung der Startliste für den Ötztaler Moped Marathon. Startnummern, QR-Codes, App-Anbindung.
- * Version:           1.4.5
+ * Version:           1.5.0
  * Author:            Manuel Ribis GmbH
  * Author URI:        https://mopedmarathon.at
  * License:           GPL-2.0+
