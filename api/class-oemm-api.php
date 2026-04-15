@@ -87,11 +87,13 @@ class OEMM_API {
             'permission_callback' => function() { return current_user_can( 'manage_options' ); },
         ) );
 
-        // Fahrerliste komplett - für Urban's Besenwagen-App (API-Key geschützt)
+        // Fahrerliste komplett - API-Key ODER WP Admin
         register_rest_route( $ns, '/participants', array(
             'methods'             => 'GET',
             'callback'            => array( __CLASS__, 'get_participants' ),
-            'permission_callback' => array( __CLASS__, 'check_api_key' ),
+            'permission_callback' => function( $request ) {
+                return OEMM_API::check_api_key( $request ) || current_user_can( 'manage_options' );
+            },
         ) );
 
         // Foto-Zuordnung - für Christian & Marcel (Fotopoint)
@@ -320,6 +322,13 @@ class OEMM_API {
             return new WP_REST_Response( array( 'error' => 'credentials_path fehlt.' ), 400 );
         }
         update_option( 'oemm_firebase_credentials_path', $path );
+
+        // Optional: api_key mitsetzen
+        $api_key = sanitize_text_field( trim( $request->get_param( 'api_key' ) ?? '' ) );
+        if ( $api_key ) {
+            update_option( 'oemm_api_key', $api_key );
+        }
+
         return new WP_REST_Response( array(
             'success'      => true,
             'path'         => $path,
