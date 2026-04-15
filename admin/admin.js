@@ -120,6 +120,10 @@ jQuery(function($) {
         postData.startnumber_start = data.startnumber_start;
         postData.app_url          = data.app_url;
         if (data.event_active) postData.event_active = 1;
+        postData.github_token              = data.github_token || '';
+        postData.api_key                   = data.api_key || '';
+        postData.firebase_credentials_path = data.firebase_credentials_path || '';
+        if (data.delete_data_on_uninstall) postData.delete_data_on_uninstall = 1;
 
         // Felder als flache key-value
         allFields.forEach(function(f) {
