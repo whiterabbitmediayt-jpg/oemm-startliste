@@ -16,6 +16,9 @@
             <a href="<?php echo esc_url( admin_url( 'admin.php?page=oemm-export' ) ); ?>" class="button button-secondary">
                 📥 Export
             </a>
+            <button id="oemm-btn-firebase-sync" class="button button-secondary" title="Alle Fahrer zu Firebase/Firestore synchronisieren">
+                🔥 Firebase Sync
+            </button>
             <button id="oemm-btn-clear-update-cache" class="button button-secondary" title="Update-Prüfung erzwingen">
                 🔄 Updates prüfen
             </button>
@@ -56,6 +59,7 @@
                         Produkt <span class="oemm-sort-icon">↕</span>
                     </th>
                     <th style="width:100px">Speichern</th>
+                    <th style="width:60px">QR</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,6 +133,20 @@
                         <button class="oemm-btn-save-startnumber button button-small button-primary"
                                 data-customer-id="<?php echo esc_attr( $cid ); ?>"
                                 title="Startnummer speichern">✓ Speichern</button>
+                    </td>
+
+                    <!-- QR Code -->
+                    <td style="text-align:center">
+                        <?php
+                        $token_app = $p['token_app'] ?? '';
+                        if ( $token_app ) :
+                            $app_url = OEMM_QR::get_target_url( $token_app );
+                            $qr_img  = OEMM_QR::get_url( $token_app, 80 );
+                        ?>
+                        <a href="<?php echo esc_url( $app_url ); ?>" target="_blank" title="<?php echo esc_attr( $app_url ); ?>">
+                            <img src="<?php echo esc_url( $qr_img ); ?>" width="40" height="40" style="display:block;margin:0 auto" loading="lazy" />
+                        </a>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>

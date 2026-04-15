@@ -147,6 +147,25 @@ jQuery(function($) {
     // Update-Cache leeren
     // -------------------------------------------------------------------------
 
+    $('#oemm-btn-firebase-sync').on('click', function() {
+        var $btn = $(this).prop('disabled', true).text('Syncing...');
+        ajaxPost('generate_tokens', {}, '')
+        .then(function(res) {
+            if (res.success) {
+                var msg = res.data.message || 'Sync abgeschlossen.';
+                showNotice('\uD83D\uDD25 ' + msg, 'success');
+            } else {
+                showNotice('Fehler beim Sync: ' + (res.data || ''), 'error');
+            }
+        })
+        .fail(function(xhr) {
+            showNotice('Fehler: ' + xhr.status + ' ' + xhr.statusText, 'error');
+        })
+        .always(function() {
+            $btn.prop('disabled', false).text('\uD83D\uDD25 Firebase Sync');
+        });
+    });
+
     $('#oemm-btn-clear-update-cache').on('click', function() {
         var $btn = $(this).prop('disabled', true).text('Wird geprüft...');
         $.post(oemm_ajax.url, {
