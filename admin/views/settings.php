@@ -65,18 +65,12 @@ $active     = OEMM_Settings::get_fields();
                 </td>
             </tr>
             <tr>
-                <th>Firebase URL</th>
+                <th>Firebase Credentials</th>
                 <td>
-                    <input type="url" name="firebase_url" value="<?php echo esc_attr( OEMM_Settings::get_firebase_url() ); ?>" style="width:400px;font-family:monospace" placeholder="https://PROJEKT-default-rtdb.europe-west1.firebasedatabase.app" />
-                    <p class="description">Realtime Database URL aus der Firebase Console. Ohne abschließenden Schrägstrich.</p>
-                </td>
-            </tr>
-            <tr>
-                <th>Firebase Database Secret</th>
-                <td>
-                    <input type="password" name="firebase_secret" value="<?php echo esc_attr( OEMM_Settings::get_firebase_secret() ); ?>" style="width:400px;font-family:monospace" autocomplete="off" />
-                    <p class="description">Database Secret aus Firebase Console → Projekteinstellungen → Service Accounts → Database Secrets.<br>
-                    Wird für den automatischen Fahrer-Sync zur Besenwagen-App verwendet.</p>
+                    <input type="text" name="firebase_credentials_path" value="<?php echo esc_attr( OEMM_Settings::get_firebase_credentials_path() ); ?>" style="width:500px;font-family:monospace" placeholder="/var/www/secure/firebase-credentials.json" />
+                    <p class="description">Absoluter Serverpfad zur Service Account JSON-Datei (von Urban).<br>
+                    <strong>Wichtig:</strong> Datei außerhalb des Webroot ablegen (nicht im <code>wp-content</code> Ordner)!<br>
+                    Projekt: <code>moped-tracker</code> &mdash; App-ID: <code>1:1087816067648:web:ddca938996fc936cfccda5</code></p>
                 </td>
             </tr>
             <tr>
