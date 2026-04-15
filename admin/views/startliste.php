@@ -141,10 +141,10 @@
                         $token_app = $p['token_app'] ?? '';
                         if ( $token_app ) :
                             $app_url = OEMM_QR::get_target_url( $token_app );
-                            $qr_img  = OEMM_QR::get_url( $token_app, 80 );
+                            $qr_img  = OEMM_QR::get_url( $token_app, 100 );
                         ?>
                         <a href="<?php echo esc_url( $app_url ); ?>" target="_blank" title="<?php echo esc_attr( $app_url ); ?>">
-                            <img src="<?php echo esc_url( $qr_img ); ?>" width="40" height="40" style="display:block;margin:0 auto" loading="lazy" />
+                            <img src="<?php echo esc_url( $qr_img ); ?>" width="100" height="100" style="display:block;margin:0 auto" loading="lazy" />
                         </a>
                         <?php endif; ?>
                     </td>
