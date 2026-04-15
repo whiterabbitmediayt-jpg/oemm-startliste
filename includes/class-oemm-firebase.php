@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 class OEMM_Firebase {
 
     const PROJECT_ID = 'moped-tracker';
-    const APP_ID     = '1:1087816067648:web:ddca938996fc936cfccda5';
+    const APP_ID     = 'moped-tracker-event';
 
     // -------------------------------------------------------------------------
     // Öffentliche API
