@@ -147,7 +147,8 @@ class OEMM_Settings {
             $key = preg_replace( '/[^a-zA-Z0-9\-_]/', '', $data['api_key'] );
             update_option( 'oemm_api_key', $key );
         }
-        if ( isset( $data['firebase_credentials_path'] ) ) {
+        if ( isset( $data['firebase_credentials_path'] ) && trim( $data['firebase_credentials_path'] ) !== '' ) {
+            // Nur speichern wenn nicht leer — verhindert versehentliches Ueberschreiben
             update_option( 'oemm_firebase_credentials_path', sanitize_text_field( trim( $data['firebase_credentials_path'] ) ) );
         }
         // Daten-Lösch-Schalter (bewusst explizit)
