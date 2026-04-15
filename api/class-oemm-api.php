@@ -53,6 +53,13 @@ class OEMM_API {
             'permission_callback' => array( __CLASS__, 'check_api_key' ),
         ) );
 
+        // Firebase Debug (nur Admin)
+        register_rest_route( $ns, '/firebase-test', array(
+            'methods'             => 'GET',
+            'callback'            => array( __CLASS__, 'firebase_test' ),
+            'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        ) );
+
         // Admin: Massen-Import (nur für Admins)
         register_rest_route( $ns, '/migrate', array(
             'methods'             => 'POST',
@@ -295,6 +302,29 @@ class OEMM_API {
         update_user_meta( $customer_id, $key, $photos );
 
         return new WP_REST_Response( array( 'success' => true, 'count' => count( $photos ) ), 200 );
+    }
+
+    /**
+     * GET /oemm/v1/firebase-test — Firebase Verbindungstest (nur Admin)
+     */
+    public static function firebase_test( WP_REST_Request $request ): WP_REST_Response {
+        $path = get_option( 'oemm_firebase_credentials_path', '' );
+
+        $result = array(
+            'credentials_path'   => $path ?: '(nicht gesetzt)',
+            'file_exists'        => $path ? file_exists( $path ) : false,
+            'file_readable'      => $path ? is_readable( $path ) : false,
+        );
+
+        if ( $result['file_readable'] ) {
+            $json = json_decode( file_get_contents( $path ), true );
+            $result['json_valid']     = is_array( $json );
+            $result['project_id']     = $json['project_id'] ?? '?';
+            $result['client_email']   = $json['client_email'] ?? '?';
+            $result['has_private_key'] = ! empty( $json['private_key'] );
+        }
+
+        return new WP_REST_Response( $result, 200 );
     }
 
     /**
