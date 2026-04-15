@@ -53,6 +53,13 @@ class OEMM_API {
             'permission_callback' => array( __CLASS__, 'check_api_key' ),
         ) );
 
+        // Firebase Credentials setzen (nur Admin)
+        register_rest_route( $ns, '/firebase-setup', array(
+            'methods'             => 'POST',
+            'callback'            => array( __CLASS__, 'firebase_setup' ),
+            'permission_callback' => function() { return current_user_can( 'manage_options' ); },
+        ) );
+
         // Firebase Debug (nur Admin)
         register_rest_route( $ns, '/firebase-test', array(
             'methods'             => 'GET',
@@ -302,6 +309,23 @@ class OEMM_API {
         update_user_meta( $customer_id, $key, $photos );
 
         return new WP_REST_Response( array( 'success' => true, 'count' => count( $photos ) ), 200 );
+    }
+
+    /**
+     * POST /oemm/v1/firebase-setup — Firebase Credentials-Pfad setzen (nur Admin)
+     */
+    public static function firebase_setup( WP_REST_Request $request ): WP_REST_Response {
+        $path = sanitize_text_field( trim( $request->get_param( 'credentials_path' ) ?? '' ) );
+        if ( ! $path ) {
+            return new WP_REST_Response( array( 'error' => 'credentials_path fehlt.' ), 400 );
+        }
+        update_option( 'oemm_firebase_credentials_path', $path );
+        return new WP_REST_Response( array(
+            'success'      => true,
+            'path'         => $path,
+            'file_exists'  => file_exists( $path ),
+            'file_readable'=> is_readable( $path ),
+        ), 200 );
     }
 
     /**
