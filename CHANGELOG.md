@@ -5,6 +5,17 @@ Format: [Semantisches Versioning](https://semver.org/) — MAJOR.MINOR.PATCH
 
 ---
 
+## [1.7.0] — 2026-05-23
+
+### Neu
+- **Victor-Export — Startnummern & Wunschnummern:** `GET /oemm/v1/victor-export?format=csv|xlsx`
+- **Victor-Export — T-Shirt Produktion:** `GET /oemm/v1/tshirt-export?format=csv|xlsx` (inkl. Geschlecht + Zusammenfassung)
+- **Victor-Export — Lettershop & More:** `GET /oemm/v1/lettershop-export?format=csv|xlsx` (Versandzentrum-Format, ISO 3166-1 Länderkürzel, SHIRT_CODE)
+- Neue Klasse `api/class-oemm-exports.php` für alle drei Exports
+- Export-Buttons im WP-Admin (Export-Seite) via JS-Snippet
+
+---
+
 ## [1.2.1] — 2026-04-13
 
 ### Fix
