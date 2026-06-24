@@ -19,6 +19,7 @@ class OEMM_Admin {
         add_action( 'wp_ajax_oemm_export_csv',         array( __CLASS__, 'ajax_export_csv' ) );
         add_action( 'wp_ajax_oemm_export_qr_zip',        array( __CLASS__, 'ajax_export_qr_zip' ) );
         add_action( 'wp_ajax_oemm_clear_update_cache',   array( __CLASS__, 'ajax_clear_update_cache' ) );
+        add_action( 'wp_ajax_oemm_lastminute_sale',       array( __CLASS__, 'ajax_lastminute_sale' ) );
     }
 
     // -------------------------------------------------------------------------
@@ -27,34 +28,34 @@ class OEMM_Admin {
 
     public static function add_menu() {
         add_menu_page(
-            'ÖMM Startliste',
-            'ÖMM Startliste',
-            'manage_woocommerce',
+            'ÖMM Backend',
+            'ÖMM Backend',
+            'manage_options',
             'oemm-startliste',
             array( __CLASS__, 'page_startliste' ),
             'dashicons-groups',
-            58
+            2
         );
         add_submenu_page(
             'oemm-startliste',
             'Startliste',
-            'Startliste',
-            'manage_woocommerce',
+            '📋 Startliste',
+            'manage_options',
             'oemm-startliste',
             array( __CLASS__, 'page_startliste' )
         );
         add_submenu_page(
             'oemm-startliste',
             'Einstellungen',
-            'Einstellungen',
-            'manage_woocommerce',
+            '⚙️ Einstellungen',
+            'manage_options',
             'oemm-settings',
             array( __CLASS__, 'page_settings' )
         );
         add_submenu_page(
             'oemm-startliste',
             'Import',
-            'Import (Einmalig)',
+            '📥 Import',
             'manage_options',
             'oemm-import',
             array( __CLASS__, 'page_import' )
@@ -62,18 +63,26 @@ class OEMM_Admin {
         add_submenu_page(
             'oemm-startliste',
             'Export',
-            'Export',
-            'manage_woocommerce',
+            '📤 Export',
+            'manage_options',
             'oemm-export',
             array( __CLASS__, 'page_export' )
         );
         add_submenu_page(
             'oemm-startliste',
             'Statistik',
-            'App vs. Papier',
-            'manage_woocommerce',
+            '📊 Statistik',
+            'manage_options',
             'oemm-stats',
             array( __CLASS__, 'page_stats' )
+        );
+        add_submenu_page(
+            'oemm-startliste',
+            'Last Minute',
+            '⚡ Last Minute',
+            'manage_options',
+            'oemm-lastminute',
+            array( __CLASS__, 'page_lastminute' )
         );
     }
 
@@ -179,13 +188,21 @@ class OEMM_Admin {
         check_ajax_referer( 'oemm_admin', 'nonce' );
         if ( ! current_user_can( 'manage_woocommerce' ) ) wp_die( 'Unauthorized', 403 );
 
+        // 1. Tokens generieren (wie bisher)
         $participants = OEMM_Participant::get_all();
         $count = 0;
         foreach ( $participants as $p ) {
             $tokens = OEMM_Token::get_or_create( (int) $p['customer_id'] );
             if ( $tokens ) $count++;
         }
-        wp_send_json_success( array( 'count' => $count, 'message' => "{$count} Token-Paare generiert/geprueft." ) );
+
+        // 2. NEU: Jetzt den echten Firebase Sync auslösen!
+        $sync_result = OEMM_Firebase::sync_all();
+
+        // 3. Neue Erfolgsmeldung für den Browser bauen
+        $message = "{$count} Tokens geprüft. Firebase: " . $sync_result['success'] . " erfolgreich gesendet, " . $sync_result['failed'] . " fehlgeschlagen.";
+        
+        wp_send_json_success( array( 'count' => $count, 'message' => $message ) );
     }
 
     public static function ajax_import_excel() {
@@ -329,6 +346,132 @@ class OEMM_Admin {
         if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized', 403 );
         OEMM_Updater::clear_cache();
         wp_send_json_success( 'Update-Cache geleert.' );
+    }
+
+    public static function page_lastminute() {
+        $year        = OEMM_Settings::get_event_year();
+        $product_ids = OEMM_Settings::get_product_ids();
+        $app_url     = OEMM_Settings::get_app_url();
+        include OEMM_PLUGIN_DIR . 'admin/views/lastminute.php';
+    }
+
+    public static function ajax_lastminute_sale() {
+        check_ajax_referer( 'oemm_admin', 'nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized', 403 );
+
+        $first_name  = sanitize_text_field( $_POST['first_name'] ?? '' );
+        $last_name   = sanitize_text_field( $_POST['last_name']  ?? '' );
+        $email       = sanitize_email(      $_POST['email']      ?? '' );
+        $phone       = sanitize_text_field( $_POST['phone']      ?? '' );
+        $startnumber = sanitize_text_field( $_POST['startnumber'] ?? '' );
+        $amount      = floatval(            $_POST['amount']      ?? 149 );
+        $product_id  = intval(              $_POST['product_id']  ?? 0 );
+        $send_email  = (bool) ( $_POST['send_email'] ?? false );
+
+        if ( ! $first_name || ! $last_name || ! $email ) {
+            wp_send_json_error( 'Vorname, Nachname und E-Mail sind Pflichtfelder.' );
+        }
+
+        // 1. WP User anlegen oder existierenden finden
+        $user_id = email_exists( $email );
+        if ( ! $user_id ) {
+            $username = sanitize_user( strtolower( $first_name . '.' . $last_name ), true );
+            // Falls Username bereits vergeben, Zahl anhängen
+            $base_username = $username;
+            $counter = 1;
+            while ( username_exists( $username ) ) {
+                $username = $base_username . $counter++;
+            }
+            $password = wp_generate_password( 12, false );
+            $user_id  = wp_create_user( $username, $password, $email );
+            if ( is_wp_error( $user_id ) ) {
+                wp_send_json_error( 'Fehler beim Anlegen des Users: ' . $user_id->get_error_message() );
+            }
+            // Billing-Daten setzen
+            update_user_meta( $user_id, 'first_name',         $first_name );
+            update_user_meta( $user_id, 'last_name',          $last_name );
+            update_user_meta( $user_id, 'billing_first_name', $first_name );
+            update_user_meta( $user_id, 'billing_last_name',  $last_name );
+            update_user_meta( $user_id, 'billing_email',      $email );
+            update_user_meta( $user_id, 'billing_phone',      $phone );
+        } else {
+            // Bestehenden User aktualisieren (Telefon etc.)
+            if ( $phone ) update_user_meta( $user_id, 'billing_phone', $phone );
+        }
+
+        // 2. WooCommerce Order anlegen
+        $product = $product_id ? wc_get_product( $product_id ) : null;
+        if ( ! $product ) {
+            // Fallback: erstes oemm_product_id nehmen
+            $ids     = OEMM_Settings::get_product_ids();
+            $product = wc_get_product( $ids[0] ?? 0 );
+        }
+        if ( ! $product ) {
+            wp_send_json_error( 'Kein gültiges Produkt gefunden. Bitte Produkt-IDs in den Einstellungen prüfen.' );
+        }
+
+        $order = wc_create_order( array( 'customer_id' => $user_id, 'status' => 'completed' ) );
+        if ( is_wp_error( $order ) ) {
+            wp_send_json_error( 'Fehler beim Anlegen der Order: ' . $order->get_error_message() );
+        }
+
+        $order->add_product( $product, 1, array( 'subtotal' => $amount, 'total' => $amount ) );
+        $order->set_billing_first_name( $first_name );
+        $order->set_billing_last_name(  $last_name );
+        $order->set_billing_email(      $email );
+        $order->set_billing_phone(      $phone );
+        $order->set_total( $amount );
+        $order->add_order_note( 'Last-Minute-Verkauf vor Ort. Startnummer: ' . $startnumber . '. Erstellt via ÖMM Backend.' );
+        $order->save();
+        $order_id = $order->get_id();
+
+        // 3. oemm_participants Row + Tokens
+        OEMM_Participant::ensure_row( (int) $user_id );
+        $tokens = OEMM_Token::get_or_create( (int) $user_id );
+
+        // 4. Startnummer setzen (falls angegeben)
+        if ( $startnumber !== '' ) {
+            OEMM_Participant::set_startnumber( (int) $user_id, $startnumber );
+        }
+
+        // 5. Firebase Sync
+        $firebase_ok = OEMM_Firebase::sync_participant( (int) $user_id );
+
+        // 6. Magic Link + QR
+        $app_url   = OEMM_Settings::get_app_url();
+        $magic_link = $app_url . $tokens['app'];
+        $qr_url    = OEMM_QR::get_url( $tokens['app'], 300 );
+
+        // 7. Optional: Bestätigungs-E-Mail mit Magic Link
+        if ( $send_email ) {
+            $subject = 'Deine Startnummer ' . $startnumber . ' — Ötztaler Moped Marathon ' . OEMM_Settings::get_event_year();
+            $message = "Hallo {$first_name},
+
+"
+                . "hier ist dein persönlicher Magic Link für die Besenwagen-App:
+
+"
+                . $magic_link . "
+
+"
+                . "Deine Startnummer: " . $startnumber . "
+
+"
+                . "Viel Spaß beim ÖMM!
+"
+                . "Das ÖMM-Team";
+            wp_mail( $email, $subject, $message );
+        }
+
+        wp_send_json_success( array(
+            'user_id'     => $user_id,
+            'order_id'    => $order_id,
+            'startnumber' => $startnumber,
+            'magic_link'  => $magic_link,
+            'qr_url'      => $qr_url,
+            'token_app'   => $tokens['app'],
+            'firebase_ok' => $firebase_ok,
+        ) );
     }
 
     public static function ajax_save_settings() {
